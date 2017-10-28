@@ -1,9 +1,10 @@
-(function() {
-    var width = 480;
-	var height = 500;
 
-    var random_d3 = d3.select("#random");
-    var svg = random_d3.append("svg");
+(function() {
+    var width = 960;
+    var	height = 1000;
+
+    var hdi_d3 = d3.select("#hdi");
+    var svg = hdi_d3.append("svg");
     svg.attr("width", width);
     svg.attr("height", height);
 
@@ -18,12 +19,19 @@
 
     var path = d3.geoPath().projection(projection);
 
+    var countryToHDIRank = d3.map();
     d3.queue()
     	.defer(d3.json, "countries.geojson")
+        .defer(d3.tsv, "hdi_table1.tsv", function(d) {
+            countryToHDIRank.set(d["ISO_A3"], d["HDI rank"]);
+        })
     	.await(ready);
+
 
     function ready(error, countries) {
     	if (error) throw error;
+
+        console.log(countryToHDIRank.get("THA"))
 
     	svg.selectAll("path")
     			.data(countries.features)
@@ -31,9 +39,13 @@
     			.attr('d', path)
     			.attr('vector-effect', 'non-scaling-stroke')
     			.style("fill", function(d) {
-    				// console.log(d);
-    				cur = color(Math.floor(Math.random() * 8) + 2 );
-    				// console.log(cur);
+    				var cur = 10
+                    if (countryToHDIRank.has(d.properties.ISO_A3)) {
+                        // HDI rank for each country
+                        var rank = parseFloat(countryToHDIRank.get(d.properties.ISO_A3))
+                        console.log(d.properties.ISO_A3 + "," + rank);
+                        cur = color(Math.floor(rank / 188 * 8) + 2);
+                    }
     				return cur;
     			});
     }
