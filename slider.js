@@ -34,6 +34,7 @@
             .on("start.interrupt", function() {slider.interrupt();})
             .on("start drag", function() {
                 var year = Math.round(x.invert(d3.event.x));
+                dispatch("sliderMove", this, year);
                 dragSlide(year); 
             }));
 
@@ -50,6 +51,7 @@
 
 
     var handler = slider.insert("g", ".track-overlay")
+        .attr("class", "handler-group")
         .append("circle")
         .attr("class", "handle")
         .attr("r", 9);
