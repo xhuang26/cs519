@@ -1,6 +1,6 @@
 (function(){
     var margin = 50;
-	var width = 300;
+	var width = 500;
     var height = 100;
 
 	var container = d3.select("#slider");
@@ -12,6 +12,9 @@
         .attr("transform", "translate(20,30)");
 
     var year_range = [1990, 2015];
+
+    var year_ticks =[1990, 2000, 2010, 2015];
+    var years = [1990, 2000, 2010, 2011, 2012, 2013, 2014, 2015];
 
     var x = d3.scaleLinear()
     	.domain(year_range)
@@ -33,20 +36,38 @@
         .call(d3.drag()
             .on("start.interrupt", function() {slider.interrupt();})
             .on("start drag", function() {
-                var year = Math.round(x.invert(d3.event.x));
-                dispatch("sliderMove", this, year);
+                var year = x.invert(d3.event.x);
                 dragSlide(year); 
             }));
 
     slider.insert("g", ".track-overlay")
         .attr("class", "slider-ticks")
-        .attr("transform", "translate(0," + 18 + ")")
+        .attr("transform", "translate(0," + 30 + ")")
         .selectAll("text")
-        .data(x.ticks(4))
+        .data(year_ticks)
         .enter().append("text")
             .attr("x", x)
             .attr("text-anchor", "middle")
-            .text(function(d) {return d;});
+            .text(function(d) {return d;})
+        .select(function() {
+            console.log(this.parentNode);
+            return this.parentNode;
+        })
+        .selectAll("line")
+        .data([2000, 2010, 2011, 2012, 2013, 2014])
+        .enter().append("line")
+            .attr("transform", "translate(0,-25)")
+            .attr("x1", function(d) {
+                return x(d);
+            })
+            .attr("y1", 0)
+            .attr("x2", function(d) {
+                return x(d);
+            })
+            .attr("y2", 4)
+            .attr("stroke", "#bbb")
+            .attr("stroke-width", 1);
+
 
 
 
@@ -65,7 +86,15 @@
 
     function dragSlide(h) {
         handler.attr("cx", x(h));
-        handler_text.attr("x", x(h)).text(h);
+        var year = Math.floor(h);
+        for(let i=years.length-1; i>=0; i--) {
+            if(years[i] <= year) {
+                year = years[i];
+                break;
+            }
+        }
+        sliderMove.call("sliderMove", this, year);
+        handler_text.attr("x", x(h)).text(year);
     };
 
 })();
