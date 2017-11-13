@@ -89,7 +89,7 @@
 
         let nameTag = svg.append("text")
             .attr("x", 10)
-            .attr("y", 15)
+            .attr("y", 20)
             .attr("class", "caption")
             .attr("fill", "#000")
             .attr("text-anchor", "start")
