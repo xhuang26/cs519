@@ -7,7 +7,6 @@
     svg.attr("width", width);
     svg.attr("height", height);
 
-    console.log("HEY");
     var projection = d3.geoMercator()
         .scale([100])
         .translate([width/2, height/2]);

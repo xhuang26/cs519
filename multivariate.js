@@ -27,21 +27,16 @@
 				.attr("transform", function() {
 					return `translate(${width-legend_size*4},30)`;
 				});
-	
+
 
 	var color_map = [
 	["#be64ac", "#dfb0d6", "#e8e8e8"],
 	["#8c62aa", "#a5add3", "#ace4e4"],
 	["#3b4994", "#5698b9", "#5ac8c8"]];
 
-
 	var black_color = "#000000";
 
 	var color_map_size = color_map.length;
-
-
-	
-	
 
 	for(let n=0; n<color_map_size; n++) {
 		legend.selectAll('rect' + ` .row-${n}`)
@@ -62,7 +57,7 @@
 	        .attr("y", n*legend_size);
 	}
 
-	
+
 	var tickFormat = function(d,i) {
 				return "~" + d;
 	};
@@ -93,19 +88,19 @@
 			var yAxisInfo = parseFloat(d[yAxisInfoName]);
 
 			temp.push(xAxisInfo);
-			
+
 			xAxisInfoRange = findRange(xAxisInfoRange, xAxisInfo);
 			yAxisInfoRange = findRange(yAxisInfoRange, yAxisInfo);
 			var countryInfo = new CountryInfo(d["ISO_A3"], xAxisInfo, yAxisInfo);
 			countryInfoMap.set(d["ISO_A3"], countryInfo);
-			
+
 		})
 		.await(ready);
 
 	function ready(error, countries) {
 		if (error) throw error;
 
-		console.log(xAxisInfoRange, yAxisInfoRange);
+		// console.log(xAxisInfoRange, yAxisInfoRange);
 
 		var yScale = d3.scaleLinear()
 			.domain([yAxisInfoRange[1], yAxisInfoRange[0]])
@@ -123,7 +118,7 @@
 		xTick = xTick.map(toFixed1);
 		yTick = yTick.map(toFixed1);
 
-		
+
 		var xAxis = d3.axisBottom(xScale)
 				.tickValues(xTick)
 				.tickSize(0);
@@ -144,7 +139,7 @@
 		}).call(yAxis).select(".domain")
 		    .remove();
 
-		
+
 
 		svg.append("g")
 			.selectAll("path")
@@ -159,12 +154,10 @@
 					var {xAxisInfo, yAxisInfo} = countryInfoMap.get(d.properties.ISO_A3);
 					var x = Math.min(Math.floor(xToIndexScale(xAxisInfo)), 2);
 					var y = Math.min(Math.floor(yToIndexScale(yAxisInfo)), 2);
-					
+
 					return color_map[x][y];
 				});
 	}
-
-
 
 	function getRangeIndex(steps, range, val) {
 		var stepSize = (range[1]-range[0])/steps;
@@ -176,6 +169,4 @@
 		range[1] = Math.max(range[1], newVal);
 		return range;
 	}
-
-	
 })();
