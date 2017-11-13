@@ -7,6 +7,7 @@
     svg.attr("width", width);
     svg.attr("height", height);
 
+    console.log("HEY");
     var projection = d3.geoMercator()
         .scale([100])
         .translate([width/2, height/2]);
@@ -75,6 +76,24 @@
                     cur = d3.interpolateRdPu(rank / num_countries)
                 }
                 return cur;
-            });
+            })
+            .on('mouseover', function(country) {
+                d3.select(this).style('stroke', '#00e68a')
+                nameTag.text("Country: " + country.properties.ADMIN)
+                nameTag.style('visibility', 'visible')
+            })
+            .on('mouseout', function() {
+                d3.select(this).style('stroke', null)
+                nameTag.style('visibility', 'hidden')
+            })
+
+        let nameTag = svg.append("text")
+            .attr("x", 10)
+            .attr("y", 15)
+            .attr("class", "caption")
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
     }
+
 })();
