@@ -52,10 +52,21 @@
 
     var countryToHDI= d3.map();
     var year = "1990";
-    var ranges;
+    var scale;
+
+    d3.queue()
+        .defer(d3.tsv, "hdi_ranges.tsv")
+        .await(function(error, ranges) {
+            console.log(Object.values(ranges[0]));
+            var min = Math.min.apply(null, Object.values(ranges[0]));
+            var max = Math.max.apply(null, Object.values(ranges[1]));
+            var range = [min,max];
+            scale = d3.scaleLinear().domain(range).range([0, 1]);
+            legendTicks(range);
+        });
+
     d3.queue()
         .defer(d3.json, "countries.geojson")
-        .defer(d3.tsv, "hdi_ranges.tsv")
         .defer(d3.tsv, "hdi_historical.tsv", function(d) {
             
             var hdiInfo = new HdiInfo(d["ISO_A3"], d[1990], d[2000],d[2010],d[2011],d[2012],d[2013],d[2014],d[2015]);
@@ -64,11 +75,8 @@
         .await(ready);
 
 
-    function ready(error, countries, ranges) {
+    function ready(error, countries) {
         if (error) throw error;
-        var range = [ranges[0][year], ranges[1][year]];
-        console.log(countryToHDI);
-        var scale = d3.scaleLinear().domain(range).range([0, 1]);
 
         
 
@@ -87,10 +95,7 @@
                 }
                 return cur;
             });
-        legendTicks(range);
         sliderMove.on("sliderMove", function(year) {
-            range = [ranges[0][year], ranges[1][year]];
-            legendTicks(range);
             svg.selectAll(".country-polygon")
                 .style("fill", function(d) {
                     var cur = d3.rgb("black");
