@@ -77,9 +77,7 @@
 
     function ready(error, countries) {
         if (error) throw error;
-
-        
-
+      
         svg.selectAll("path")
             .data(countries.features)
             .enter().append("path")
@@ -94,7 +92,25 @@
                     cur = d3.interpolateRdPu(scale(hdi));
                 }
                 return cur;
+            })
+            .on('mouseover', function(country) {
+                d3.select(this).style('stroke', '#00e68a')
+                nameTag.text("Country: " + country.properties.ADMIN)
+                nameTag.style('visibility', 'visible')
+            })
+            .on('mouseout', function() {
+                d3.select(this).style('stroke', null)
+                nameTag.style('visibility', 'hidden')
             });
+      
+        let nameTag = svg.append("text")
+            .attr("x", 10)
+            .attr("y", 20)
+            .attr("class", "caption")
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold");
+      
         sliderMove.on("sliderMove", function(year) {
             svg.selectAll(".country-polygon")
                 .style("fill", function(d) {
@@ -107,10 +123,9 @@
                     return cur;
                 });
         });
-
-    }
-
-    function legendTicks(range) {
+  }
+  
+  function legendTicks(range) {
         var x2 = d3.scaleLinear()
         .domain(range)
         .range([width - 200, width - 20]);
@@ -124,5 +139,5 @@
             .select(".domain")
             .remove();
     }
-
+  
 })();
