@@ -80,15 +80,11 @@
 			return `translate(-20,${(color_map_size*legend_size-single_char_size*yAxisInfoName.length)/2})rotate(-90)`;
 		}).text(yAxisInfoName).style("font-size",10);
 
-	temp = [];
 	d3.queue()
 		.defer(d3.json, "countries.geojson")
 		.defer(d3.tsv, "hdi_table1.tsv", function(d) {
 			var xAxisInfo = parseFloat(d[xAxisInfoName]);
 			var yAxisInfo = parseFloat(d[yAxisInfoName]);
-
-			temp.push(xAxisInfo);
-
 			xAxisInfoRange = findRange(xAxisInfoRange, xAxisInfo);
 			yAxisInfoRange = findRange(yAxisInfoRange, yAxisInfo);
 			var countryInfo = new CountryInfo(d["ISO_A3"], xAxisInfo, yAxisInfo);
@@ -99,9 +95,6 @@
 
 	function ready(error, countries) {
 		if (error) throw error;
-
-		// console.log(xAxisInfoRange, yAxisInfoRange);
-
 		var yScale = d3.scaleLinear()
 			.domain([yAxisInfoRange[1], yAxisInfoRange[0]])
 			.range([0, color_map_size*legend_size]);
@@ -162,11 +155,5 @@
 	function getRangeIndex(steps, range, val) {
 		var stepSize = (range[1]-range[0])/steps;
 		return Math.max(Math.ceil((val-range[0])/stepSize -1), 0);
-	}
-
-	function findRange(range, newVal) {
-		range[0] = Math.min(range[0], newVal);
-		range[1] = Math.max(range[1], newVal);
-		return range;
 	}
 })();
