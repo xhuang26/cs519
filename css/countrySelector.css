@@ -17,6 +17,10 @@
     justify-content: center;
 }
 
+.countrySelector-items__selected {
+	background: #29405A;
+}
+
 #countrySelector-searchbar-input {
 	width: 270px;
     height: 20px;

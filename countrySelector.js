@@ -1,5 +1,6 @@
 (function() {
 
+	var selectedCountry = null;
 	var CountryInfo = function(name, iso, scale, rank) {
 		this.name = name;
 		this.iso = iso;
@@ -9,7 +10,7 @@
 
 	CountryInfo.prototype.getDiv = function() {
 		var div = document.createElement('div');
-		div.innerHTML = `<div country="${this.name}" class="item countrySelector-items"><svg width="20px" height="20px" class="countrySelector-circle"><circle cx="10" cy="15" r="5" fill="${this.color}" /></svg><span>${this.name}</span></div>`;
+		div.innerHTML = `<div country="${this.name}" iso="${this.iso}" class="item countrySelector-items"><svg width="20px" height="20px" class="countrySelector-circle"><circle cx="10" cy="15" r="5" fill="${this.color}" /></svg><span>${this.name}</span></div>`;
 		return div;
 	};
 
@@ -26,6 +27,24 @@
 			countryInfoMap.set(country["ISO_A3"], countryInfo);
 		});
 		items = document.getElementsByClassName("countrySelector-items");
+		for(let i=0; i<items.length; i++) {
+			items[i].onclick = (function() {
+				var item = items[i];
+				return function() {
+
+					if(selectedCountry != null) {
+						selectedCountry.className = "item countrySelector-items";
+						eventDispatcher.call('countrySelect', this, countryInfoMap.get(selectedCountry.getAttribute("iso")),countryInfoMap.get(item.getAttribute("iso")));
+					} else {
+						eventDispatcher.call('countrySelect', this, null,countryInfoMap.get(item.getAttribute("iso")));
+					}
+					selectedCountry = item;
+					selectedCountry.className +=  " countrySelector-items__selected";
+				}
+				
+				
+			})();
+		}
 	});
 	var input = document.getElementById("countrySelector-searchbar-input");
 	
@@ -42,3 +61,4 @@
 		}
 	}
 })();
+//countryInfoMap.get(item.getAttribute("iso"))
