@@ -81,6 +81,9 @@
             .data(countries.features)
             .enter().append("path")
             .attr("class", "country-polygon")
+            .attr("id", function(d) {
+                return `polygon-${d.properties.ISO_A3}`;
+            })
             .attr('d', path)
             .attr('vector-effect', 'non-scaling-stroke')
             .style("fill", function(d) {
@@ -120,6 +123,15 @@
                     }
                     return cur;
                 });
+        });
+        eventDispatcher.on('countrySelect', function(prev_country, country) {
+            var id = `#polygon-${country["iso"]}`;
+            console.log();
+            if(prev_country != null) {
+                var prev_id = `#polygon-${prev_country["iso"]}`;
+                d3.select(prev_id).style('stroke', null);
+            }
+            d3.select(id).style('stroke', '#00e68a');
         });
   }
 

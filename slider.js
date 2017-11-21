@@ -50,7 +50,6 @@
             .attr("text-anchor", "middle")
             .text(function(d) {return d;})
         .select(function() {
-            console.log(this.parentNode);
             return this.parentNode;
         })
         .selectAll("line")

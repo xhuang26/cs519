@@ -1,0 +1,39 @@
+#countrySelectorContainer {
+	width: 300px;
+	background: #1F3043;
+
+}
+#countrySelector{
+	overflow: scroll;
+	height: 500px;
+}
+
+.countrySelector-circle {
+	display: inline;
+}
+
+#countrySelector-searchbar {
+	display: flex;
+    justify-content: center;
+}
+
+.countrySelector-items__selected {
+	background: #29405A;
+}
+
+#countrySelector-searchbar-input {
+	width: 270px;
+    height: 20px;
+    padding: .1rem;
+    border-radius: .25em;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0);
+    color: white;
+    margin-top: 5px;
+}
+
+#countrySelector-searchbar-input:focus {outline: none; }
+
+#countrySelector-searchbar-input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: rgba(225, 225, 225, 0.5);
+}
