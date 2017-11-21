@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="./css/global.css">
   <link rel="stylesheet" href="./css/mapSelector.css">
   <link rel="stylesheet" href="./css/componentSelector.css">
+  <link rel="stylesheet" href="./css/countrySelector.css">
   <meta charset="utf-8">
   <title>CS 519: Scientific Visualization</title>
 </head>
@@ -92,7 +93,13 @@ body {
       </div>
     </div>
   </div>
-    
+  <h1>Country Selector</h1>
+  <div id="countrySelectorContainer">
+    <div id="countrySelector-searchbar">
+      <input id="countrySelector-searchbar-input" placeholder="search country..." type="text"/>
+    </div>
+    <div id="countrySelector"></div>
+  </div>
   <div id="hdiContainer">
     <h1>HDI Map</h1>
     <div id="hdi"></div>
@@ -114,6 +121,7 @@ body {
   <script src="slider.js"></script>
   <script src="mapSelector.js"></script>
   <script src="componentSelector.js"></script>
+  <script src="countrySelector.js"></script> 
   <script src="parallel.js"></script>
 </body>
 

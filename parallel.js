@@ -31,7 +31,6 @@
                 .domain(d3.extent(hdi, function(p) { return +p[d]; }))
                 .range([height, 0]));
         }));
-
         scale = d3.scaleLinear().domain([1, num_countries]).range([0, 1]);
 
         // Add lines for country.
@@ -67,7 +66,6 @@
 
     // Returns the path for a given data point.
     function path(d) {
-        console.log(d)
         return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
 
