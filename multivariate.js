@@ -72,15 +72,33 @@
 
 	var single_char_size = 4;
 
-	legend.append("text").attr("text-anchor", "start").attr("transform", function() {
-			return `translate(${(color_map_size*legend_size-single_char_size*xAxisInfoName.length)/2},${color_map_size*legend_size+20})`;
+	legend.append("text").attr("class", "component-x").attr("text-anchor", "start").attr("transform", function() {
+			return `translate(${(color_map_size*legend_size-single_char_size*xAxisInfoName.length)/2},${color_map_size*legend_size+25})`;
 		}).text(xAxisInfoName).style("font-size",10);
 
-	legend.append("text").attr("text-anchor", "end").attr("transform", function() {
+	legend.append("text").attr("class", "component-y").attr("text-anchor", "end").attr("transform", function() {
 			return `translate(-20,${(color_map_size*legend_size-single_char_size*yAxisInfoName.length)/2})rotate(-90)`;
 		}).text(yAxisInfoName).style("font-size",10);
 
-	d3.queue()
+	addQueue();
+
+	function updateComponent(xAxisSpan, yAxisSpan) {
+		xAxisInfoName = xAxisSpan.innerText;
+		yAxisInfoName = yAxisSpan.innerText;
+		xAxisInfoRange = [Infinity, 0];
+		yAxisInfoRange = [Infinity, 0];
+		d3.select(".component-x").attr("transform", function() {
+			return `translate(${(color_map_size*legend_size-single_char_size*xAxisInfoName.length)/2},${color_map_size*legend_size+20})`;
+		}).text(xAxisInfoName);
+		d3.select(".component-y").attr("transform", function() {
+			return `translate(-25,${(color_map_size*legend_size-single_char_size*yAxisInfoName.length)/2})rotate(-90)`;
+		}).text(yAxisInfoName);
+		countryInfo = d3.map();
+		addQueue();
+	}
+
+	function addQueue() {
+		d3.queue()
 		.defer(d3.json, "countries.geojson")
 		.defer(d3.tsv, "hdi_table1.tsv", function(d) {
 			var xAxisInfo = parseFloat(d[xAxisInfoName]);
@@ -92,6 +110,7 @@
 
 		})
 		.await(ready);
+	}
 
 	function ready(error, countries) {
 		if (error) throw error;
@@ -122,13 +141,15 @@
 		var xToIndexScale = d3.scaleLinear().domain(xAxisInfoRange).range([0, color_map_size]);
 		var yToIndexScale = d3.scaleLinear().domain(yAxisInfoRange).range([color_map_size, 0]);
 
+		legend.select(".x-axis").remove();
+		legend.select(".y-axis").remove();
 		legend.append("g").attr("class", "x-axis").attr("transform", function() {
 			return `translate(0,${color_map_size*legend_size})`;
 		}).call(xAxis).select(".domain")
 		    .remove();
 
 		legend.append("g").attr("class", "y-axis").attr("transform", function() {
-			return `translate(0,0)`;
+			return "translate(0,0)";
 		}).call(yAxis).select(".domain")
 		    .remove();
 
@@ -151,6 +172,10 @@
 					return color_map[x][y];
 				});
 	}
+
+	eventDispatcher.on("componentChange", function(xAxis, yAxis) {
+			updateComponent(xAxis, yAxis);
+		});
 
 	function getRangeIndex(steps, range, val) {
 		var stepSize = (range[1]-range[0])/steps;

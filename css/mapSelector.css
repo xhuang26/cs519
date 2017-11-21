@@ -1,0 +1,11 @@
+#mapSelector {
+	width: 300px;
+}
+
+#mapSelector .mapSelector-item__checked{
+	background: #29405A;
+}
+
+#mapSelector .mapSelector-item {
+	transition: background 0.2s ease;
+}

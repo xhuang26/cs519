@@ -93,7 +93,7 @@
                 break;
             }
         }
-        sliderMove.call("sliderMove", this, year);
+        eventDispatcher.call("sliderMove", this, year);
         handler_text.attr("x", x(h)).text(year);
     };
 
