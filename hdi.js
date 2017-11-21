@@ -57,7 +57,6 @@
     d3.queue()
         .defer(d3.tsv, "hdi_ranges.tsv")
         .await(function(error, ranges) {
-            console.log(Object.values(ranges[0]));
             var min = Math.min.apply(null, Object.values(ranges[0]));
             var max = Math.max.apply(null, Object.values(ranges[1]));
             var range = [min,max];
@@ -111,7 +110,7 @@
             .attr("text-anchor", "start")
             .attr("font-weight", "bold");
       
-        sliderMove.on("sliderMove", function(year) {
+        eventDispatcher.on("sliderMove", function(year) {
             svg.selectAll(".country-polygon")
                 .style("fill", function(d) {
                     var cur = d3.rgb("black");

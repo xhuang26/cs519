@@ -1,15 +1,6 @@
 #mapSelector {
 	width: 300px;
 }
-#mapSelector .mapSelector-item {
-	background: #1F3043;
-	color: #fff;
-	padding: 10px 12px;
-}
-
-#mapSelector .mapSelector-item:hover {
-	background: #2A3B4D;
-}
 
 #mapSelector .mapSelector-item__checked{
 	background: #29405A;

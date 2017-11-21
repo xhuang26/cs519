@@ -5,9 +5,10 @@
 	for(let i=0; i< radios.length; i++) {
 		values.push(radios[i].getAttribute("value"));
 		radios[i].onclick = function() {
-			console.log(`${radios[i].getAttribute("value")}Container`);
 			var container = document.getElementById(`${radios[i].getAttribute("value")}Container`);
+			var controller = document.getElementById(`${radios[i].getAttribute("value")}Controller`);
 			container.style.display = "block";
+			controller.style.display = "block";
 			radios[i].className += " mapSelector-item__checked";
 			currentMap = radios[i].getAttribute("value");
 			disableMap();
@@ -17,11 +18,12 @@
 
 	function disableMap() {
 		for(let i=0; i< radios.length; i++) {
-			console.log(values[i], currentMap);
 			if(values[i] !== currentMap) {
 				var container = document.getElementById(`${radios[i].getAttribute("value")}Container`);
-				radios[i].className = "mapSelector-item";
+				var controller = document.getElementById(`${radios[i].getAttribute("value")}Controller`);
+				radios[i].className = "item";
 				container.style.display = "none";
+				controller.style.display = "none";
 			}
 		}
 	}

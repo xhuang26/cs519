@@ -1,0 +1,8 @@
+.componentSelector-submenu {
+	padding: 10px;
+	background: #1F3043;
+}
+
+.componentSelector-submenu-item-checked {
+	background: #29405A;
+}

@@ -1,0 +1,9 @@
+.item {
+	background: #1F3043;
+	color: #fff;
+	padding: 10px 12px;
+}
+
+.item:hover {
+	background: #2A3B4D;
+}
