@@ -67,7 +67,7 @@
     d3.queue()
         .defer(d3.json, "countries.geojson")
         .defer(d3.tsv, "hdi_historical.tsv", function(d) {
-            
+
             var hdiInfo = new HdiInfo(d["ISO_A3"], d[1990], d[2000],d[2010],d[2011],d[2012],d[2013],d[2014],d[2015]);
             countryToHDI.set(d["ISO_A3"], hdiInfo);
         })
@@ -76,7 +76,7 @@
 
     function ready(error, countries) {
         if (error) throw error;
-      
+
         svg.selectAll("path")
             .data(countries.features)
             .enter().append("path")
@@ -101,15 +101,14 @@
                 d3.select(this).style('stroke', null)
                 nameTag.style('visibility', 'hidden')
             });
-      
+
         let nameTag = svg.append("text")
             .attr("x", 10)
             .attr("y", 20)
             .attr("class", "caption")
             .attr("fill", "#000")
             .attr("text-anchor", "start")
-            .attr("font-weight", "bold");
-      
+            .attr("font-weight", "bold");      
         eventDispatcher.on("sliderMove", function(year) {
             svg.selectAll(".country-polygon")
                 .style("fill", function(d) {
@@ -123,7 +122,7 @@
                 });
         });
   }
-  
+
   function legendTicks(range) {
         var x2 = d3.scaleLinear()
         .domain(range)
@@ -138,5 +137,5 @@
             .select(".domain")
             .remove();
     }
-  
+
 })();
