@@ -2,9 +2,9 @@
 
 (function(){
 
-    var margin = {top: 30, right: 10, bottom: 20, left: 50},
+    var margin = {top: 30, right: 10, bottom: 100, left: 50},
       width = 800 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+      height = 600 - margin.top - margin.bottom;
 
     var x = d3.scalePoint().range([0, width]);
       y = {};
@@ -41,9 +41,29 @@
             .enter().append("path")
             .attr("d", path)
             .style("stroke", function(d) {
-                var rank = d['HDI rank']
+                var rank = d['HDI rank'];
                 return d3.interpolateSpectral(scale(rank))
             })
+            .on('mouseover', function(d) {
+                d3.select(this).style('stroke-width', '3')
+                d3.select(this).style('stroke', 'black')
+                countryTag.text("Country: " + d['Country'])
+                countryTag.style('visibility', 'visible')
+                InfoTag.text("HDI: " + d['Human Development Index (HDI)'] + ", " +
+                             "LEB: " + d['Life expectancy at birth'] + ", " +
+                             "EYS: " + d['Expected years of schooling'] + ", " +
+                             "MYS: " + d['Mean years of schooling'] + ", " +
+                             "GNI: " + d['Gross national income (GNI) per capita']);
+                InfoTag.style('visibility', 'visible')
+            })
+            .on('mouseout', function(d) {
+                var rank = d['HDI rank'];
+                d3.select(this).style('stroke', d3.interpolateSpectral(scale(rank)));
+                d3.select(this).style('stroke-width', '1')
+                countryTag.style('visibility', 'hidden')
+                InfoTag.style('visibility', 'hidden')
+            });
+
 
         // Add a group element for each dimension.
         var g = svg.selectAll(".dimension")
@@ -61,6 +81,21 @@
             .attr("y", -15)
             .attr("fill", "#000")
             .text(function(d) { return d; });
+
+        let countryTag = svg.append("text")
+            .attr("x", 0)
+            .attr("y", height + 30)
+            .attr("class", "caption")
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold");
+        let InfoTag = svg.append("text")
+            .attr("x", 0)
+            .attr("y", height + 60)
+            .attr("class", "caption")
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold");
     });
 
 
