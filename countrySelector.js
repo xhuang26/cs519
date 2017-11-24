@@ -34,9 +34,9 @@
 
 					if(selectedCountry != null) {
 						selectedCountry.className = "item countrySelector-items";
-						eventDispatcher.call('countrySelect', this, countryInfoMap.get(selectedCountry.getAttribute("iso")),countryInfoMap.get(item.getAttribute("iso")));
+						eventDispatcher.call('countrySelect', this, [item.getAttribute("iso")]);
 					} else {
-						eventDispatcher.call('countrySelect', this, null,countryInfoMap.get(item.getAttribute("iso")));
+						eventDispatcher.call('countrySelect', this, [item.getAttribute("iso")]);
 					}
 					selectedCountry = item;
 					selectedCountry.className +=  " countrySelector-items__selected";

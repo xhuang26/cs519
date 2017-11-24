@@ -84,13 +84,19 @@
             var selection = d3.brushSelection(scale.brush);
             return [scale.invert(selection[0]), scale.invert(selection[1])];
         });
+        var selectedCountries = [];
         foreground.style("stroke", function(d) {
             var rank = d['HDI rank']
             var color =  d3.interpolateSpectral(scale(rank));
-            return actives.every(function(p, i) {
+            var isSelected = actives.every(function(p, i) {
                 return Math.min(extents[i][0], extents[i][1]) <= d[p] && d[p] <= Math.max(extents[i][0], extents[i][1]);
-            }) ? color : "rgba(220,220,220, 0.3)";
+            });
+            if(isSelected) {
+                selectedCountries.push(d["ISO_A3"]);
+            }
+            return isSelected ? color : "rgba(220,220,220, 0.3)";
         });
+        eventDispatcher.call('countrySelect', this, selectedCountries);
     }
 
     // Returns the path for a given data point.
