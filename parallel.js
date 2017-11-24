@@ -42,7 +42,7 @@
             .attr("d", path)
             .style("stroke", function(d) {
                 var rank = d['HDI rank']
-                return d3.interpolateSpectral(scale(rank))
+                return d3.interpolateSpectral(scale(rank));
             })
 
         // Add a group element for each dimension.
@@ -61,8 +61,43 @@
             .attr("y", -15)
             .attr("fill", "#000")
             .text(function(d) { return d; });
+
+        g.append("g")
+            .attr("class", "brush")
+            .each(function(d) {
+                d3.select(this).call(d3.brushY().extent([[-8,0], [8,height]]).handleSize(0).on("start", brushstart).on("brush", brush));
+                y[d].brush = this;
+            });
     });
 
+    function brushstart() {
+        d3.event.sourceEvent.stopPropagation();
+    }
+
+    function brush() {
+        var selection = d3.brushSelection(this);
+        var actives = dimensions.filter(function(p) {
+            return d3.brushSelection(y[p].brush) != null;
+        });
+        var extents = actives.map(function(p, i) {
+            var scale = y[p];
+            var selection = d3.brushSelection(scale.brush);
+            return [scale.invert(selection[0]), scale.invert(selection[1])];
+        });
+        var selectedCountries = [];
+        foreground.style("stroke", function(d) {
+            var rank = d['HDI rank']
+            var color =  d3.interpolateSpectral(scale(rank));
+            var isSelected = actives.every(function(p, i) {
+                return Math.min(extents[i][0], extents[i][1]) <= d[p] && d[p] <= Math.max(extents[i][0], extents[i][1]);
+            });
+            if(isSelected) {
+                selectedCountries.push(d["ISO_A3"]);
+            }
+            return isSelected ? color : "rgba(220,220,220, 0.3)";
+        });
+        eventDispatcher.call('countrySelect', this, selectedCountries);
+    }
 
     // Returns the path for a given data point.
     function path(d) {
