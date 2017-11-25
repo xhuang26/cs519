@@ -124,14 +124,19 @@
                     return cur;
                 });
         });
-        eventDispatcher.on('countrySelect', function(prev_country, country) {
-            var id = `#polygon-${country["iso"]}`;
-            console.log();
-            if(prev_country != null) {
-                var prev_id = `#polygon-${prev_country["iso"]}`;
-                d3.select(prev_id).style('stroke', null);
-            }
-            d3.select(id).style('stroke', '#00e68a');
+        var countries = d3.selectAll(".country-polygon");
+        eventDispatcher.on('countrySelect', function(countryISOArray) {
+            var ids = countryISOArray.map(function(countryISO) {
+                return `#polygon-${countryISO}`;
+            });
+            countries.style("stroke", function(d) {
+                var curr_id = `#polygon-${d.properties.ISO_A3}`;
+                if(!ids.includes(curr_id)) {
+                   return null;
+                } else {
+                    return '#00e68a';
+                }
+            });
         });
   }
 
