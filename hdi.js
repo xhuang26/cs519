@@ -13,7 +13,7 @@
     }
 
     var width = 650;
-    var height = 650;
+    var height = 450;
     var num_countries = 188;
     var hdi_d3 = d3.select("#hdi");
     var svg = hdi_d3.append("svg");
@@ -22,7 +22,7 @@
 
     var projection = d3.geoMercator()
         .scale([100])
-        .translate([width/2, height/2]);
+        .translate([width/2, height/2 + 100]);
 
     var path = d3.geoPath().projection(projection);
 
@@ -111,7 +111,7 @@
             .attr("class", "caption")
             .attr("fill", "#000")
             .attr("text-anchor", "start")
-            .attr("font-weight", "bold");      
+            .attr("font-weight", "bold");
         eventDispatcher.on("sliderMove", function(year) {
             svg.selectAll(".country-polygon")
                 .style("fill", function(d) {
