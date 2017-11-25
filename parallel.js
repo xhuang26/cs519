@@ -3,7 +3,7 @@
 (function(){
 
     var margin = {top: 30, right: 10, bottom: 100, left: 50},
-      width = 800 - margin.left - margin.right,
+      width = 650 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
     var x = d3.scalePoint().range([0, width]);

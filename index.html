@@ -11,7 +11,7 @@
 </head>
 <style>
 body {
-    width: 60%;
+    width: 70%;
     margin: auto;
     padding-top: 10px;
 }
@@ -59,62 +59,89 @@ body {
 .axis text {
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
+
+#hdiController {
+  float:right;
+}
+#multivariateController {
+  float:right;
+}
+#mapSelector {
+  float:left;
+}
+#mapContainer {
+  clear: left;
+}
+#countrySelectorSection {
+  float: right;
+  clear: right;
+}
 </style>
 <body>
-  <h1>Map Selector</h1>
-  <div id="mapSelector">
-    <div class="item mapSelector-item__checked" name="mapSelector" value="hdi">HDI Map</div>
-    <div class="item" name="mapSelector" value="multivariate">Multivariate Map 2015</div>
+  <div id="topPanel">
+    <div id="mapSelector">
+      <h1>Map Selector</h1>
+      <div class="item mapSelector-item__checked" name="mapSelector" value="hdi">HDI Map</div>
+      <div class="item" name="mapSelector" value="multivariate">Multivariate Map 2015</div>
+    </div>
+    <div id="hdiController">
+      <h1>HDI Map Year Slider</h1>
+      <div id="slider"></div>
+    </div>
+    <div id="multivariateController" style="width:300px;">
+        <h1>Component Selector</h1>
+        <div>
+          <div class="item componentSelector-menu">x axis: <span>Life expectancy at birth</span></div>
+          <div class="componentSelector-submenu">
+            <div class="componentSelector-submenu-item-checked item">Life expectancy at birth</div>
+            <div class="item">Expected years of schooling</div>
+            <div class="item">Mean years of schooling</div>
+            <div class="item">Gross national income (GNI) per capita</div>
+            <div class="item">GNI per capita rank minus HDI rank</div>
+          </div>
+        </div>
+        <div>
+          <div class="item componentSelector-menu">y axis: <span>Expected years of schooling</span></div>
+          <div class="componentSelector-submenu">
+            <div class="item">Life expectancy at birth</div>
+            <div class="componentSelector-submenu-item-checked item">Expected years of schooling</div>
+            <div class="item">Mean years of schooling</div>
+            <div class="item">Gross national income (GNI) per capita</div>
+            <div class="item">GNI per capita rank minus HDI rank</div>
+          </div>
+        </div>
+    </div>
   </div>
-  <div id="hdiController">
-    <h1>HDI Map Year Slider</h1>
-    <div id="slider"></div>
-  </div>
-  <div id="multivariateController">
-    <h1>Multivariate Map Component Selector</h1>
-    <div>
-      <div class="item componentSelector-menu">x axis: <span>Life expectancy at birth</span></div>
-      <div class="componentSelector-submenu">
-        <div class="componentSelector-submenu-item-checked item">Life expectancy at birth</div>
-        <div class="item">Expected years of schooling</div>
-        <div class="item">Mean years of schooling</div>
-        <div class="item">Gross national income (GNI) per capita</div>
-        <div class="item">GNI per capita rank minus HDI rank</div>
+
+  <div id="countrySelectorSection">
+    <h1>Country Selector</h1>
+    <div id="countrySelectorContainer">
+      <div id="countrySelector-searchbar">
+        <input id="countrySelector-searchbar-input" placeholder="search country..." type="text"/>
       </div>
-    </div>
-    <div>
-      <div class="item componentSelector-menu">y axis: <span>Expected years of schooling</span></div>
-      <div class="componentSelector-submenu">
-        <div class="item">Life expectancy at birth</div>
-        <div class="componentSelector-submenu-item-checked item">Expected years of schooling</div>
-        <div class="item">Mean years of schooling</div>
-        <div class="item">Gross national income (GNI) per capita</div>
-        <div class="item">GNI per capita rank minus HDI rank</div>
-      </div>
+      <div id="countrySelector"></div>
     </div>
   </div>
-  <h1>Country Selector</h1>
-  <div id="countrySelectorContainer">
-    <div id="countrySelector-searchbar">
-      <input id="countrySelector-searchbar-input" placeholder="search country..." type="text"/>
+  <div id="mapContainer">
+    <div id="hdiContainer">
+      <h1>HDI Map</h1>
+      <div id="hdi"></div>
     </div>
-    <div id="countrySelector"></div>
+    <div id="multivariateContainer">
+      <h1>Multivariate Map</h1>
+      <div id="multivariate"></div>
+    </div>
+    <div id="ParallelContainer">
+      <h1>Parallel Coordinates</h1>
+      <div id="parallel"></div>
+    </div>
   </div>
-  <div id="hdiContainer">
-    <h1>HDI Map</h1>
-    <div id="hdi"></div>
-  </div>
-  <div id="multivariateContainer">
-    <h1>Multivariate Map</h1>
-    <div id="multivariate"></div>
-  </div>
-  <h1>Parallel Coordinates</h1>
-  <div id="parallel"></div>
 
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script src="https://d3js.org/topojson.v2.min.js"></script>
   <script src="global.js"></script>
+  <script src="index.js"></script>
   <script src="hdi.js"></script>
   <script src="multivariate.js"></script>
   <script src="slider.js"></script>

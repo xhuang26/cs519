@@ -13,7 +13,7 @@
     }
 
     var width = 650;
-    var height = 450;
+    var height = 500;
     var num_countries = 188;
     var hdi_d3 = d3.select("#hdi");
     var svg = hdi_d3.append("svg");
@@ -22,34 +22,13 @@
 
     var projection = d3.geoMercator()
         .scale([100])
-        .translate([width/2, height/2 + 100]);
+        .translate([width/2, 300]);
 
     var path = d3.geoPath().projection(projection);
 
     var x = d3.scaleThreshold()
         .domain(d3.range(1, num_countries))
         .range(d3.range(width - 200, width - 20));
-    // Drawing the scale bar on the map
-    var g = svg.append("g")
-        .attr("class", "key")
-        .attr("transform", "translate(0,30)");
-    g.selectAll("rect")
-      .data(x.domain())
-      .enter().append("rect")
-        .attr("height", 5)
-        .attr("x", function(d) {  return x(d); })
-        .attr("width", function(d) { return x(2) - x(1); })
-        .attr("fill", function(d) { return d3.interpolateRdPu(d / num_countries); });
-
-    g.append("text")
-    .attr("x", x.range()[0])
-    .attr("y", -10)
-    .attr("class", "caption")
-    .attr("fill", "#000")
-    .attr("text-anchor", "start")
-    .attr("font-weight", "bold")
-    .text("HDI");
-
     var countryToHDI= d3.map();
     var year = "1990";
     var scale;
@@ -73,6 +52,26 @@
         })
         .await(ready);
 
+    // Drawing the scale bar on the map
+    var g = svg.append("g")
+        .attr("class", "key")
+        .attr("transform", "translate(0,450)");
+    g.selectAll("rect")
+      .data(x.domain())
+      .enter().append("rect")
+        .attr("height", 5)
+        .attr("x", function(d) {  return x(d); })
+        .attr("width", function(d) { return x(2) - x(1); })
+        .attr("fill", function(d) { return d3.interpolateRdPu(d / num_countries); });
+
+    g.append("text")
+    .attr("x", x.range()[0])
+    .attr("y", -10)
+    .attr("class", "caption")
+    .attr("fill", "#000")
+    .attr("text-anchor", "start")
+    .attr("font-weight", "bold")
+    .text("HDI");
 
     function ready(error, countries) {
         if (error) throw error;

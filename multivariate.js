@@ -9,7 +9,7 @@
 	var toFixed1 = function(x) {return +(x.toFixed(1));}
 
 	var width = 650;
-	var height = 550;
+	var height = 600;
 	var container = d3.select("#multivariate");
 	var svg = container.append("svg");
 	svg.attr("width", width);
@@ -18,14 +18,14 @@
     var projection = d3.geoMercator()
 	  .scale([100])
 	  .center([0,0])
-	  .translate([width/2, height/2]);
+	  .translate([width/2, 300]);
 
 	var path = d3.geoPath().projection(projection);
 
     var legend_size = 40;
     var legend = svg.append("g")
 				.attr("transform", function() {
-					return `translate(${width-legend_size*4},400)`;
+					return `translate(${width-legend_size*4},450)`;
 				});
 
 
