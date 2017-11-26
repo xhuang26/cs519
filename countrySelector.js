@@ -35,19 +35,33 @@
 					if(selectedCountry != null) {
 						selectedCountry.className = "item countrySelector-items";
 						eventDispatcher.call('countrySelect', this, [item.getAttribute("iso")]);
+					//	eventDispatcher.call('updatingCountryLine', this, item.getAttribute("iso"));
 					} else {
 						eventDispatcher.call('countrySelect', this, [item.getAttribute("iso")]);
+					//	eventDispatcher.call('updatingCountryLine', this, item.getAttribute("iso"));
 					}
 					selectedCountry = item;
 					selectedCountry.className +=  " countrySelector-items__selected";
 				}
-				
-				
+
+
+			})();
+			items[i].onmouseover = (function() {
+				var item = items[i];
+				return function() {
+					eventDispatcher.call('mouseOverCountryLine', this, item.getAttribute("iso"));
+				}
+			})();
+			items[i].onmouseout = (function() {
+				var item = items[i];
+				return function() {
+					eventDispatcher.call('mouseOutCountryLine', this, item.getAttribute("iso"));
+				}
 			})();
 		}
 	});
 	var input = document.getElementById("countrySelector-searchbar-input");
-	
+
 	input.oninput = function() {
 		var value = document.getElementById("countrySelector-searchbar-input").value.toLowerCase();
 		for(let i=0; i<items.length; i++) {

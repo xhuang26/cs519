@@ -40,6 +40,7 @@
             .data(hdi)
             .enter().append("path")
             .attr("d", path)
+            .attr("class", "country-line")
             .style("stroke", function(d) {
                 var rank = d['HDI rank']
                 return d3.interpolateSpectral(scale(rank));
@@ -65,6 +66,39 @@
                 InfoTag.style('visibility', 'hidden')
             });
 
+        var lines = d3.selectAll(".country-line");
+
+        eventDispatcher.on('mouseOverCountryLine', function(countryISO) {
+            lines.filter(function(d){ return d.ISO_A3 == countryISO; })
+                .style("stroke", function(d) {
+                    oldColor = d3.select(this).style("stroke");
+                    countryTag.text("Country: " + d['Country'])
+                    countryTag.style('visibility', 'visible')
+                    InfoTag.text("HDI: " + d['Human Development Index (HDI)'] + ", " +
+                                 "LEB: " + d['Life expectancy at birth'] + ", " +
+                                 "EYS: " + d['Expected years of schooling'] + ", " +
+                                 "MYS: " + d['Mean years of schooling'] + ", " +
+                                 "GNI: " + d['Gross national income (GNI) per capita']);
+                    InfoTag.style('visibility', 'visible')
+                    return 'black';
+                })
+                .style("stroke-width", function(d) {
+                    oldWidth = d3.select(this).style("stroke-width");
+                    return '3';
+                });
+        });
+        eventDispatcher.on('mouseOutCountryLine', function(countryISO) {
+            lines.filter(function(d){ return d.ISO_A3 == countryISO; })
+                .style("stroke", function(d) {
+                    d3.select(this).style("stroke-width", oldWidth);
+                    countryTag.style('visibility', 'hidden')
+                    InfoTag.style('visibility', 'hidden')
+                    return oldColor;
+                })
+                .style("stroke-width", function(d) {
+                    return oldWidth;
+                });
+        });
 
         // Add a group element for each dimension.
         var g = svg.selectAll(".dimension")
