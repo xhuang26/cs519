@@ -1,0 +1,147 @@
+body {
+    padding: 5px;
+    margin: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-feature-settings: "kern","liga","pnum";
+    -webkit-font-smoothing: antialiased;
+    background-color: #191A1A;
+}
+h3, h4 {
+  margin: 0;
+  
+}
+
+h3 {
+  font-size: 13px;
+  padding: 7px 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #b6b9bc;
+  background-color: rgba(0,0,0,1);
+}
+
+h4 {
+  border-top: 1px solid #495058;
+  text-transform: uppercase;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 10px;
+  letter-spacing: 1.5px;
+
+}
+
+#topPanel {
+  background: rgba(0,0,0,0.8);
+  width: 270px;
+  margin-right: 5px;
+  position: absolute;
+  right: 255px;
+}
+
+#topPanelButton {
+  cursor: pointer;
+}
+
+#topPanel h3 {
+  
+  width: 250px;
+}
+
+#topPanel h3:hover {
+  background-color: #ededed;
+  color: black;
+}
+
+
+#parallelContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.8);
+  -webkit-transition: all 1s;
+  -moz-transition: all 1s;
+  -ms-transition: all 1s;
+  transition: all 1s;
+}
+
+.parallelContainer__hide {
+  bottom: -352px !important;
+}
+
+#arrowContainer {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  left: 46%;
+  top: -30px;
+}
+
+#arrowContainer a {
+  position: relative;
+  bottom: 18px;
+}
+
+
+
+#arrowContainer a:hover .arrow:after{
+  border-top: 0.2em solid #fff;
+  border-right: 0.2em solid #fff;
+}
+
+#arrowContainer #bottom:after {
+  -moz-transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  transform: rotate(135deg);
+}
+
+#arrowContainer #top:after {
+  -moz-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+#arrowContainer .arrow {
+    display: inline-block;
+    width: 6em;
+    height: 3em;
+    background-color: rgba(0,0,0,0.8);
+    border-top-left-radius: 3em;
+    border-top-right-radius: 3em;
+}
+
+#arrowContainer .arrow:after {
+  content: '';
+  display: inline-block;
+  margin-top: 1em;
+  width: 1.4em;
+  height: 1.4em;
+  border-top: 0.2em solid rgba(255,255,255,0.7);
+  border-right: 0.2em solid rgba(255,255,255,0.7);
+  
+  margin-left: 2.2em;
+}
+
+
+#multivariateController {
+  width: 270px;
+
+}
+#mapSelector {
+  width: 270px;
+}
+
+#mapContainer {
+}
+
+#countrySelectorSection {
+  background: rgba(0,0,0,0.8);
+  position: absolute;
+  right: 5px;
+  width: 250px;
+}
+
+#countrySelectorSection h3 {
+  border-bottom: 1px solid #495058;
+}

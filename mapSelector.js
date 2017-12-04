@@ -21,7 +21,7 @@
 			if(values[i] !== currentMap) {
 				var container = document.getElementById(`${radios[i].getAttribute("value")}Container`);
 				var controller = document.getElementById(`${radios[i].getAttribute("value")}Controller`);
-				radios[i].className = "item";
+				radios[i].className = "item mapSelector-item";
 				container.style.display = "none";
 				controller.style.display = "none";
 			}

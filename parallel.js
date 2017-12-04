@@ -2,9 +2,9 @@
 
 (function(){
 
-    var margin = {top: 30, right: 10, bottom: 100, left: 50},
-      width = 800 - margin.left - margin.right,
-      height = 600 - margin.top - margin.bottom;
+    var margin = {top: 30, right: 120, bottom: 10, left: 100},
+      width = 1681 - margin.left - margin.right,
+      height = 300 - margin.top - margin.bottom;
 
     var x = d3.scalePoint().range([0, width]);
       y = {};
@@ -42,7 +42,7 @@
             .attr("d", path)
             .attr("class", "country-line")
             .style("stroke", function(d) {
-                var rank = d['HDI rank']
+                var rank = d['HDI rank'];
                 return d3.interpolateSpectral(scale(rank));
             })
             .on('mouseover', function(d) {
@@ -114,21 +114,21 @@
             .append("text")
             .style("text-anchor", "middle")
             .attr("y", -15)
-            .attr("fill", "#000")
+            .attr("fill", "#fff")
             .text(function(d) { return d; });
 
         let countryTag = svg.append("text")
             .attr("x", 0)
             .attr("y", height + 30)
             .attr("class", "caption")
-            .attr("fill", "#000")
+            .attr("fill", "#fff")
             .attr("text-anchor", "start")
             .attr("font-weight", "bold");
         let InfoTag = svg.append("text")
             .attr("x", 0)
             .attr("y", height + 60)
             .attr("class", "caption")
-            .attr("fill", "#000")
+            .attr("fill", "#fff")
             .attr("text-anchor", "start")
             .attr("font-weight", "bold");
         g.append("g")

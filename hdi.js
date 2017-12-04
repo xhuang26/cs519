@@ -12,8 +12,8 @@
         this.hdi_2015 = hdi_2015;
     }
 
-    var width = 650;
-    var height = 500;
+    var width = 1600;
+    var height = 800;
     var num_countries = 188;
     var hdi_d3 = d3.select("#hdi");
     var svg = hdi_d3.append("svg");
@@ -21,8 +21,8 @@
     svg.attr("height", height);
 
     var projection = d3.geoMercator()
-        .scale([100])
-        .translate([width/2, 300]);
+        .scale([190])
+        .translate([700, 550]);
 
     var path = d3.geoPath().projection(projection);
 
@@ -32,6 +32,8 @@
     var countryToHDI= d3.map();
     var year = "1990";
     var scale;
+
+    var gray = d3.color('rgba(0,0,0,0.2)');
 
     d3.queue()
         .defer(d3.tsv, "hdi_ranges.tsv")
@@ -55,20 +57,20 @@
     // Drawing the scale bar on the map
     var g = svg.append("g")
         .attr("class", "key")
-        .attr("transform", "translate(0,450)");
+        .attr("transform", "translate(-1300,600)");
     g.selectAll("rect")
       .data(x.domain())
       .enter().append("rect")
         .attr("height", 5)
         .attr("x", function(d) {  return x(d); })
         .attr("width", function(d) { return x(2) - x(1); })
-        .attr("fill", function(d) { return d3.interpolateRdPu(d / num_countries); });
+        .attr("fill", function(d) { return d3.interpolateRdBu(d / num_countries); });
 
     g.append("text")
     .attr("x", x.range()[0])
     .attr("y", -10)
     .attr("class", "caption")
-    .attr("fill", "#000")
+    .attr("fill", "#fff")
     .attr("text-anchor", "start")
     .attr("font-weight", "bold")
     .text("HDI");
@@ -86,16 +88,22 @@
             .attr('d', path)
             .attr('vector-effect', 'non-scaling-stroke')
             .style("fill", function(d) {
-                var cur = d3.rgb("black");
+                var cur = gray;
                 if (countryToHDI.has(d.properties.ISO_A3)) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                     var hdi = hdiInfo[`hdi_${year}`];
-                    cur = d3.interpolateRdPu(scale(hdi));
+                    if(hdi !== '..')  {
+                        cur = d3.interpolateRdBu(scale(hdi));
+                    }
                 }
+                d3.select(this).attr("color", cur);
                 return cur;
             })
             .on('mouseover', function(country) {
-                d3.select(this).style('stroke', '#00e68a')
+                if(d3.select(this).attr("color") == gray) {
+                    return;
+                }
+                d3.select(this).style('stroke', '#040e19')
                 nameTag.text("Country: " + country.properties.ADMIN)
                 nameTag.style('visibility', 'visible')
             })
@@ -108,17 +116,17 @@
             .attr("x", 10)
             .attr("y", 20)
             .attr("class", "caption")
-            .attr("fill", "#000")
+            .attr("fill", "#fff")
             .attr("text-anchor", "start")
             .attr("font-weight", "bold");
         eventDispatcher.on("sliderMove", function(year) {
             svg.selectAll(".country-polygon")
                 .style("fill", function(d) {
-                    var cur = d3.rgb("black");
+                    var cur = gray;
                     if (countryToHDI.has(d.properties.ISO_A3)) {
                         var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                         var hdi = hdiInfo[`hdi_${year}`];
-                        cur = d3.interpolateRdPu(scale(hdi));
+                        cur = d3.interpolateRdBu(scale(hdi));
                     }
                     return cur;
                 });

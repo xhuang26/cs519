@@ -1,7 +1,7 @@
 (function(){
-    var margin = 50;
-	var width = 500;
-    var height = 100;
+    var margin = 20;
+	var width = 270;
+    var height = 70;
 
 	var container = d3.select("#slider");
 	var svg = container.append("svg");
@@ -46,8 +46,10 @@
         .selectAll("text")
         .data(year_ticks)
         .enter().append("text")
+            .attr("transform", "translate(0,-" + 10 + ")")
             .attr("x", x)
             .attr("text-anchor", "middle")
+            .attr("fill", "#fff")
             .text(function(d) {return d;})
         .select(function() {
             return this.parentNode;
@@ -80,6 +82,7 @@
         return this.parentNode;
     }).append("text")
         .attr("text-anchor", "middle")
+        .attr("fill", "#fff")
         .attr("transform", "translate(0, -15)")
         .text(year_range[0]);
 
