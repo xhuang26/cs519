@@ -8,25 +8,23 @@
 
 	var toFixed1 = function(x) {return +(x.toFixed(1));}
 
-	var width = 650;
-	var height = 600;
+	var width = 1600;
+	var height = 800;
 	var container = d3.select("#multivariate");
 	var svg = container.append("svg");
 	svg.attr("width", width);
     svg.attr("height", height);
 
     var projection = d3.geoMercator()
-	  .scale([100])
+	  .scale([190])
 	  .center([0,0])
-	  .translate([width/2, 300]);
+	  .translate([700, 550]);
 
 	var path = d3.geoPath().projection(projection);
 
     var legend_size = 40;
     var legend = svg.append("g")
-				.attr("transform", function() {
-					return `translate(${width-legend_size*4},450)`;
-				});
+				.attr("transform", "translate(100, 600)");
 
 
 	var color_map = [
@@ -72,11 +70,11 @@
 
 	var single_char_size = 4;
 
-	legend.append("text").attr("class", "component-x").attr("text-anchor", "start").attr("transform", function() {
+	legend.append("text").attr("class", "component-x").attr("text-anchor", "start").attr("fill", "#fff").attr("transform", function() {
 			return `translate(${(color_map_size*legend_size-single_char_size*xAxisInfoName.length)/2},${color_map_size*legend_size+25})`;
 		}).text(xAxisInfoName).style("font-size",10);
 
-	legend.append("text").attr("class", "component-y").attr("text-anchor", "end").attr("transform", function() {
+	legend.append("text").attr("class", "component-y").attr("text-anchor", "end").attr("fill", "#fff").attr("transform", function() {
 			return `translate(-20,${(color_map_size*legend_size-single_char_size*yAxisInfoName.length)/2})rotate(-90)`;
 		}).text(yAxisInfoName).style("font-size",10);
 
@@ -146,6 +144,11 @@
 		legend.append("g").attr("class", "x-axis").attr("transform", function() {
 			return `translate(0,${color_map_size*legend_size})`;
 		}).call(xAxis).select(".domain")
+		    .remove();
+
+		legend.append("g").attr("class", "y-axis").attr("transform", function() {
+			return `translate(0,0)`;
+		}).call(yAxis).select(".domain")
 		    .remove();
 
 

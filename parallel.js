@@ -21,6 +21,8 @@
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var gray = "rgba(220, 220, 220, 0.3)";
+
     d3.tsv("hdi_table1.tsv", function(error, hdi) {
         // Extract the list of dimensions and create a scale for each.
         x.domain(dimensions = d3.keys(hdi[0]).filter(function(d) {
@@ -41,64 +43,88 @@
             .enter().append("path")
             .attr("d", path)
             .attr("class", "country-line")
+            .attr("id", function(d) {
+                return `line-${d['ISO_A3']}`;
+            })
             .style("stroke", function(d) {
                 var rank = d['HDI rank'];
                 return d3.interpolateSpectral(scale(rank));
-            })
-            .on('mouseover', function(d) {
-                d3.select(this).style('stroke-width', '3')
-                oldColor = d3.select(this).style('stroke');
-                d3.select(this).style('stroke', 'black')
-                countryTag.text("Country: " + d['Country'])
-                countryTag.style('visibility', 'visible')
-                InfoTag.text("HDI: " + d['Human Development Index (HDI)'] + ", " +
-                             "LEB: " + d['Life expectancy at birth'] + ", " +
-                             "EYS: " + d['Expected years of schooling'] + ", " +
-                             "MYS: " + d['Mean years of schooling'] + ", " +
-                             "GNI: " + d['Gross national income (GNI) per capita']);
-                InfoTag.style('visibility', 'visible')
-            })
-            .on('mouseout', function(d) {
-                var rank = d['HDI rank'];
-                d3.select(this).style('stroke', oldColor);
-                d3.select(this).style('stroke-width', '1')
-                countryTag.style('visibility', 'hidden')
-                InfoTag.style('visibility', 'hidden')
             });
+            // .on('mouseover', function(d) {
+            //     d3.select(this).style('stroke-width', '3')
+            //     oldColor = d3.select(this).style('stroke');
+            //     d3.select(this).style('stroke', 'black')
+            //     countryTag.text("Country: " + d['Country'])
+            //     countryTag.style('visibility', 'visible')
+            //     InfoTag.text("HDI: " + d['Human Development Index (HDI)'] + ", " +
+            //                  "LEB: " + d['Life expectancy at birth'] + ", " +
+            //                  "EYS: " + d['Expected years of schooling'] + ", " +
+            //                  "MYS: " + d['Mean years of schooling'] + ", " +
+            //                  "GNI: " + d['Gross national income (GNI) per capita']);
+            //     InfoTag.style('visibility', 'visible')
+            // })
+            // .on('mouseout', function(d) {
+            //     var rank = d['HDI rank'];
+            //     d3.select(this).style('stroke', oldColor);
+            //     d3.select(this).style('stroke-width', '1')
+            //     countryTag.style('visibility', 'hidden')
+            //     InfoTag.style('visibility', 'hidden')
+            // });
 
         var lines = d3.selectAll(".country-line");
+        console.log(lines);
+        eventDispatcher.on('graphCountrySelect', function(countryISO) {
+            lines.style("stroke", function(d, i) {
+                if(d.ISO_A3 === countryISO) {
+                    document.getElementById("h3-country").innerText = d['Country'].toUpperCase();
+                    document.getElementById("span-hdi").innerText = d['Human Development Index (HDI)'];
+                    document.getElementById("span-leb").innerText  = d['Life expectancy at birth'];
+                    document.getElementById("span-eys").innerText = d['Expected years of schooling'];
+                    document.getElementById("span-mys").innerText  = d['Mean years of schooling'];
+                    document.getElementById("span-gni").innerText = d['Gross national income (GNI) per capita'];
+                    return "#fff";
+                } else {
+                    if(d3.select(`#line-${d['ISO_A3']}`).style("stroke") === gray) {
+                        return gray;
+                    }
+                    var rank = d['HDI rank'];
+                    return d3.interpolateSpectral(scale(rank));
+                }
+            });
 
-        eventDispatcher.on('mouseOverCountryLine', function(countryISO) {
-            lines.filter(function(d){ return d.ISO_A3 == countryISO; })
-                .style("stroke", function(d) {
-                    oldColor = d3.select(this).style("stroke");
-                    countryTag.text("Country: " + d['Country'])
-                    countryTag.style('visibility', 'visible')
-                    InfoTag.text("HDI: " + d['Human Development Index (HDI)'] + ", " +
-                                 "LEB: " + d['Life expectancy at birth'] + ", " +
-                                 "EYS: " + d['Expected years of schooling'] + ", " +
-                                 "MYS: " + d['Mean years of schooling'] + ", " +
-                                 "GNI: " + d['Gross national income (GNI) per capita']);
-                    InfoTag.style('visibility', 'visible')
-                    return 'black';
-                })
-                .style("stroke-width", function(d) {
-                    oldWidth = d3.select(this).style("stroke-width");
-                    return '3';
-                });
         });
-        eventDispatcher.on('mouseOutCountryLine', function(countryISO) {
-            lines.filter(function(d){ return d.ISO_A3 == countryISO; })
-                .style("stroke", function(d) {
-                    d3.select(this).style("stroke-width", oldWidth);
-                    countryTag.style('visibility', 'hidden')
-                    InfoTag.style('visibility', 'hidden')
-                    return oldColor;
-                })
-                .style("stroke-width", function(d) {
-                    return oldWidth;
-                });
-        });
+
+        // eventDispatcher.on('mouseOverCountryLine', function(countryISO) {
+        //     lines.filter(function(d){ return d.ISO_A3 == countryISO; })
+        //         .style("stroke", function(d) {
+        //             oldColor = d3.select(this).style("stroke");
+        //             countryTag.text("Country: " + d['Country'])
+        //             countryTag.style('visibility', 'visible')
+        //             InfoTag.text("HDI: " + d['Human Development Index (HDI)'] + ", " +
+        //                          "LEB: " + d['Life expectancy at birth'] + ", " +
+        //                          "EYS: " + d['Expected years of schooling'] + ", " +
+        //                          "MYS: " + d['Mean years of schooling'] + ", " +
+        //                          "GNI: " + d['Gross national income (GNI) per capita']);
+        //             InfoTag.style('visibility', 'visible')
+        //             return 'black';
+        //         })
+        //         .style("stroke-width", function(d) {
+        //             oldWidth = d3.select(this).style("stroke-width");
+        //             return '3';
+        //         });
+        // });
+        // eventDispatcher.on('mouseOutCountryLine', function(countryISO) {
+        //     lines.filter(function(d){ return d.ISO_A3 == countryISO; })
+        //         .style("stroke", function(d) {
+        //             d3.select(this).style("stroke-width", oldWidth);
+        //             countryTag.style('visibility', 'hidden')
+        //             InfoTag.style('visibility', 'hidden')
+        //             return oldColor;
+        //         })
+        //         .style("stroke-width", function(d) {
+        //             return oldWidth;
+        //         });
+        // });
 
         // Add a group element for each dimension.
         var g = svg.selectAll(".dimension")
@@ -163,9 +189,10 @@
             if(isSelected) {
                 selectedCountries.push(d["ISO_A3"]);
             }
-            return isSelected ? color : "rgba(220,220,220, 0.3)";
+            return isSelected ? color : gray;
         });
-        eventDispatcher.call('countrySelect', this, selectedCountries);
+        eventDispatcher.call('mapFilterCountries', this, selectedCountries);
+        eventDispatcher.call('countrySelectorFilterCountries', this, selectedCountries);
     }
 
     // Returns the path for a given data point.

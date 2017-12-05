@@ -1,7 +1,8 @@
 (function() {
 
-    var HdiInfo = function(iso, hdi_1990, hdi_2000, hdi_2010, hdi_2011, hdi_2012, hdi_2013, hdi_2014, hdi_2015){
+    var HdiInfo = function(iso, rank, hdi_1990, hdi_2000, hdi_2010, hdi_2011, hdi_2012, hdi_2013, hdi_2014, hdi_2015){
         this.iso = iso;
+        this.rank = rank;
         this.hdi_1990 = hdi_1990;
         this.hdi_2000 = hdi_2000;
         this.hdi_2010 = hdi_2010;
@@ -33,7 +34,7 @@
     var year = "1990";
     var scale;
 
-    var gray = d3.color('rgba(0,0,0,0.2)');
+    var gray = d3.color('rgba(0,0,0,0.4)');
 
     d3.queue()
         .defer(d3.tsv, "hdi_ranges.tsv")
@@ -49,7 +50,7 @@
         .defer(d3.json, "countries.geojson")
         .defer(d3.tsv, "hdi_historical.tsv", function(d) {
 
-            var hdiInfo = new HdiInfo(d["ISO_A3"], d[1990], d[2000],d[2010],d[2011],d[2012],d[2013],d[2014],d[2015]);
+            var hdiInfo = new HdiInfo(d["ISO_A3"], d["rank"], d[1990], d[2000],d[2010],d[2011],d[2012],d[2013],d[2014],d[2015]);
             countryToHDI.set(d["ISO_A3"], hdiInfo);
         })
         .await(ready);
@@ -99,17 +100,20 @@
                 d3.select(this).attr("color", cur);
                 return cur;
             })
-            .on('mouseover', function(country) {
+            .style('cursor', function(d) {
+                if(d3.select(this).attr("color") == gray) {
+                    return 'default';
+                }
+                return 'pointer';
+            })
+            .on('click', function(country){
                 if(d3.select(this).attr("color") == gray) {
                     return;
                 }
-                d3.select(this).style('stroke', '#040e19')
-                nameTag.text("Country: " + country.properties.ADMIN)
-                nameTag.style('visibility', 'visible')
-            })
-            .on('mouseout', function() {
-                d3.select(this).style('stroke', null)
-                nameTag.style('visibility', 'hidden')
+                eventDispatcher.call('mapCountrySelect', this, country.properties.ISO_A3);
+                eventDispatcher.call('countrySelectorCountrySelect', this, country.properties.ISO_A3);
+                eventDispatcher.call('graphCountrySelect', this, country.properties.ISO_A3);
+
             });
 
         let nameTag = svg.append("text")
@@ -132,18 +136,39 @@
                 });
         });
         var countries = d3.selectAll(".country-polygon");
-        eventDispatcher.on('countrySelect', function(countryISOArray) {
-            var ids = countryISOArray.map(function(countryISO) {
-                return `#polygon-${countryISO}`;
-            });
-            countries.style("stroke", function(d) {
+        eventDispatcher.on('mapCountrySelect', function(countryISO) {
+            var id = `#polygon-${countryISO}`;
+            countries.style("stroke", function (d) {
                 var curr_id = `#polygon-${d.properties.ISO_A3}`;
-                if(!ids.includes(curr_id)) {
-                   return null;
+                if(curr_id === id) {
+                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
+                    document.getElementById("countryDetailInfo").style.visibility = "visible";
+                    document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
+                    document.getElementById("span-rank").innerText  = hdiInfo["rank"];
+                    return '#000';
                 } else {
-                    return '#00e68a';
+                    return null;
                 }
             });
+        });
+
+        eventDispatcher.on("mapFilterCountries", function(countryISOArray) {
+            var ids = countryISOArray.map(function(countryISO) {return `#polygon-${countryISO}`;});
+            countries.style("fill", function(d) {
+                var curr_id = `#polygon-${d.properties.ISO_A3}`;
+                var cur = gray;
+                if(countryToHDI.has(d.properties.ISO_A3) && ids.includes(curr_id)) {
+                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
+                    var hdi = hdiInfo[`hdi_${year}`];
+                    cur = d3.interpolateRdBu(scale(hdi));
+                    d3.select(this).style("cursor", "pointer");
+                } else {
+                    d3.select(this).style("cursor", 'default');
+                }
+                d3.select(this).style("stroke", null);
+                return cur;
+            });
+
         });
   }
 

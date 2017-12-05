@@ -24,6 +24,13 @@
 	background: #29405A;
 }
 
+.countrySelector-items__disabled {
+    color: rgba(255,255,255,0.5);
+    padding: 10px;
+    font-size:14px;
+    font-weight: 400;
+}
+
 #countrySelector-searchbar-input {
 	width: 230px;
     height: 20px;
