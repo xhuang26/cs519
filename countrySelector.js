@@ -31,9 +31,7 @@
 			items[i].onclick = (function() {
 				var item = items[i];
 				return function() {
-					eventDispatcher.call('mapCountrySelect', this, item.getAttribute("iso"));
-					eventDispatcher.call('countrySelectorCountrySelect', this, item.getAttribute("iso"));
-					eventDispatcher.call('graphCountrySelect', this, item.getAttribute("iso"));
+					dispatchCountrySelect(item.getAttribute("iso"));
 				}
 			})();
 			// items[i].onmouseover = (function() {
@@ -75,9 +73,7 @@
 					items[i].onclick = (function() {
 						var item = items[i];
 						return function() {
-							eventDispatcher.call('mapCountrySelect', this, item.getAttribute("iso"));
-							eventDispatcher.call('countrySelectorCountrySelect', this, item.getAttribute("iso"));
-							eventDispatcher.call('graphCountrySelect', this, item.getAttribute("iso"));
+							dispatchCountrySelect(item.getAttribute("iso"));
 						}
 					})();
 				} else {

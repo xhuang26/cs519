@@ -139,6 +139,11 @@ span {
   width: 270px;
 
 }
+
+.multivariate-key {
+  font-size: 13px;
+}
+
 #mapSelector {
   width: 270px;
 }

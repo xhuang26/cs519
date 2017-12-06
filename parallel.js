@@ -193,6 +193,7 @@
         });
         eventDispatcher.call('mapFilterCountries', this, selectedCountries);
         eventDispatcher.call('countrySelectorFilterCountries', this, selectedCountries);
+        eventDispatcher.call('multivariateFilterCountries', this, selectedCountries);
     }
 
     // Returns the path for a given data point.

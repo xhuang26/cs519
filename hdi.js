@@ -32,9 +32,9 @@
         .range(d3.range(width - 200, width - 20));
     var countryToHDI= d3.map();
     var year = "1990";
+    var selectedCountry = null;
     var scale;
 
-    var gray = d3.color('rgba(0,0,0,0.4)');
 
     d3.queue()
         .defer(d3.tsv, "hdi_ranges.tsv")
@@ -87,34 +87,8 @@
                 return `polygon-${d.properties.ISO_A3}`;
             })
             .attr('d', path)
-            .attr('vector-effect', 'non-scaling-stroke')
-            .style("fill", function(d) {
-                var cur = gray;
-                if (countryToHDI.has(d.properties.ISO_A3)) {
-                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
-                    var hdi = hdiInfo[`hdi_${year}`];
-                    if(hdi !== '..')  {
-                        cur = d3.interpolateRdBu(scale(hdi));
-                    }
-                }
-                d3.select(this).attr("color", cur);
-                return cur;
-            })
-            .style('cursor', function(d) {
-                if(d3.select(this).attr("color") == gray) {
-                    return 'default';
-                }
-                return 'pointer';
-            })
-            .on('click', function(country){
-                if(d3.select(this).attr("color") == gray) {
-                    return;
-                }
-                eventDispatcher.call('mapCountrySelect', this, country.properties.ISO_A3);
-                eventDispatcher.call('countrySelectorCountrySelect', this, country.properties.ISO_A3);
-                eventDispatcher.call('graphCountrySelect', this, country.properties.ISO_A3);
-
-            });
+            .attr('vector-effect', 'non-scaling-stroke');
+        updatePolygon();
 
         let nameTag = svg.append("text")
             .attr("x", 10)
@@ -123,21 +97,21 @@
             .attr("fill", "#fff")
             .attr("text-anchor", "start")
             .attr("font-weight", "bold");
-        eventDispatcher.on("sliderMove", function(year) {
-            svg.selectAll(".country-polygon")
-                .style("fill", function(d) {
-                    var cur = gray;
-                    if (countryToHDI.has(d.properties.ISO_A3)) {
-                        var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
-                        var hdi = hdiInfo[`hdi_${year}`];
-                        cur = d3.interpolateRdBu(scale(hdi));
-                    }
-                    return cur;
-                });
+        eventDispatcher.on("sliderMove", function(newyear) {
+            year = newyear;
+            if(selectedCountry != null) {
+                document.getElementById("span-year").innerText = year;
+                var hdiInfo = countryToHDI.get(selectedCountry);
+                document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
+                document.getElementById("span-rank").innerText  = hdiInfo["rank"];
+            }
+            
+            updatePolygon();
         });
         var countries = d3.selectAll(".country-polygon");
         eventDispatcher.on('mapCountrySelect', function(countryISO) {
             var id = `#polygon-${countryISO}`;
+            selectedCountry = countryISO;
             countries.style("stroke", function (d) {
                 var curr_id = `#polygon-${d.properties.ISO_A3}`;
                 if(curr_id === id) {
@@ -154,14 +128,20 @@
 
         eventDispatcher.on("mapFilterCountries", function(countryISOArray) {
             var ids = countryISOArray.map(function(countryISO) {return `#polygon-${countryISO}`;});
+            selectedCountry = null;
             countries.style("fill", function(d) {
                 var curr_id = `#polygon-${d.properties.ISO_A3}`;
                 var cur = gray;
                 if(countryToHDI.has(d.properties.ISO_A3) && ids.includes(curr_id)) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                     var hdi = hdiInfo[`hdi_${year}`];
-                    cur = d3.interpolateRdBu(scale(hdi));
-                    d3.select(this).style("cursor", "pointer");
+                    if(hdi !== '..')  {
+                        cur = d3.interpolateRdBu(scale(hdi));
+                        d3.select(this).style("cursor", "pointer");
+                    } else {
+                        d3.select(this).style("cursor", 'default');
+                    }
+                    
                 } else {
                     d3.select(this).style("cursor", 'default');
                 }
@@ -169,6 +149,34 @@
                 return cur;
             });
 
+        });
+  }
+
+  function updatePolygon() {
+    svg.selectAll(".country-polygon")
+        .style("fill", function(d) {
+                var cur = gray;
+                if (countryToHDI.has(d.properties.ISO_A3)) {
+                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
+                    var hdi = hdiInfo[`hdi_${year}`];
+                    if(hdi !== '..')  {
+                        cur = d3.interpolateRdBu(scale(hdi));
+                    }
+                }
+                d3.select(this).attr("color", cur);
+                return cur;
+            })
+            .style('cursor', function(d) {
+            if(d3.select(this).attr("color") == gray) {
+                return 'default';
+            }
+            return 'pointer';
+        })
+        .on('click', function(country){
+            if(d3.select(this).attr("color") == gray) {
+                return;
+            }
+            dispatchCountrySelect(country.properties.ISO_A3);
         });
   }
 
