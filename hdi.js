@@ -33,6 +33,7 @@
     var countryToHDI= d3.map();
     var year = "1990";
     var selectedCountry = null;
+    //var selectedCountryPolygon = null;
     var scale;
 
 
@@ -110,16 +111,21 @@
         });
         var countries = d3.selectAll(".country-polygon");
         eventDispatcher.on('mapCountrySelect', function(countryISO) {
-            var id = `#polygon-${countryISO}`;
+            var id = `polygon-${countryISO}`;
             selectedCountry = countryISO;
+            // selectedCountryPolygon = document.getElementById(id).cloneNode(true);
+            // selectedCountryPolygon.style.fill = "rgba(255, 255, 255, 0)";
+            // selectedCountryPolygon.id = "selected-polygon";
+            // console.log(selectedCountryPolygon, document.getElementById(id));
+            // svg.node().appendChild(selectedCountryPolygon);
             countries.style("stroke", function (d) {
-                var curr_id = `#polygon-${d.properties.ISO_A3}`;
-                if(curr_id === id) {
+                if(countryISO === d.properties.ISO_A3) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                     document.getElementById("countryDetailInfo").style.visibility = "visible";
                     document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
                     document.getElementById("span-rank").innerText  = hdiInfo["rank"];
-                    return '#000';
+                    d3.select(this).style("stroke-width", 3);
+                    return '#fff';
                 } else {
                     return null;
                 }
@@ -129,6 +135,7 @@
         eventDispatcher.on("mapFilterCountries", function(countryISOArray) {
             var ids = countryISOArray.map(function(countryISO) {return `#polygon-${countryISO}`;});
             selectedCountry = null;
+            //selectedCountryPolygon = null;
             countries.style("fill", function(d) {
                 var curr_id = `#polygon-${d.properties.ISO_A3}`;
                 var cur = gray;

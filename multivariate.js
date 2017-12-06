@@ -197,7 +197,8 @@
 	            countries.style("stroke", function (d) {
 	                var curr_id = `multivariate-polygon-${d.properties.ISO_A3}`;
 	                if(curr_id === id) {
-	                    return '#000';
+	                	d3.select(this).style("stroke-width", 3);
+	                    return '#fff';
 	                } else {
 	                    return null;
 	                }
