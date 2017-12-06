@@ -1,11 +1,12 @@
-#mapSelector {
-	width: 300px;
-}
-
 #mapSelector .mapSelector-item__checked{
-	background: #29405A;
+	background: rgba(255, 255, 255, 0.2);
+	color: #fff;
 }
 
 #mapSelector .mapSelector-item {
 	transition: background 0.2s ease;
+}
+
+#mapSelector h4 {
+	padding-left: 10px;
 }

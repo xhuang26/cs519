@@ -10,7 +10,7 @@
 
 	CountryInfo.prototype.getDiv = function() {
 		var div = document.createElement('div');
-		div.innerHTML = `<div country="${this.name}" iso="${this.iso}" class="item countrySelector-items"><svg width="20px" height="20px" class="countrySelector-circle"><circle cx="10" cy="15" r="5" fill="${this.color}" /></svg><span>${this.name}</span></div>`;
+		div.innerHTML = `<div country="${this.name}" iso="${this.iso}" class="item countrySelector-items"><svg width="20px" height="20px" class="countrySelector-circle"><circle id="circle-${this.iso}" cx="10" cy="15" r="5" fill="${this.color}" /></svg><span>${this.name}</span></div>`;
 		return div;
 	};
 
@@ -31,34 +31,69 @@
 			items[i].onclick = (function() {
 				var item = items[i];
 				return function() {
-
-					if(selectedCountry != null) {
-						selectedCountry.className = "item countrySelector-items";
-						eventDispatcher.call('countrySelect', this, [item.getAttribute("iso")]);
-					//	eventDispatcher.call('updatingCountryLine', this, item.getAttribute("iso"));
-					} else {
-						eventDispatcher.call('countrySelect', this, [item.getAttribute("iso")]);
-					//	eventDispatcher.call('updatingCountryLine', this, item.getAttribute("iso"));
-					}
-					selectedCountry = item;
-					selectedCountry.className +=  " countrySelector-items__selected";
-				}
-
-
-			})();
-			items[i].onmouseover = (function() {
-				var item = items[i];
-				return function() {
-					eventDispatcher.call('mouseOverCountryLine', this, item.getAttribute("iso"));
+					dispatchCountrySelect(item.getAttribute("iso"));
 				}
 			})();
-			items[i].onmouseout = (function() {
-				var item = items[i];
-				return function() {
-					eventDispatcher.call('mouseOutCountryLine', this, item.getAttribute("iso"));
-				}
-			})();
+			// items[i].onmouseover = (function() {
+			// 	var item = items[i];
+			// 	return function() {
+			// 		eventDispatcher.call('mouseOverCountryLine', this, item.getAttribute("iso"));
+			// 	}
+			// })();
+			// items[i].onmouseout = (function() {
+			// 	var item = items[i];
+			// 	return function() {
+			// 		eventDispatcher.call('mouseOutCountryLine', this, item.getAttribute("iso"));
+			// 	}
+			// })();
+
 		}
+
+		eventDispatcher.on("countrySelectorCountrySelect", function(countryISO) {
+			for(let i=0; i<items.length; i++) {
+				var iso = items[i].getAttribute("iso");
+				if(iso === countryISO) {
+					items[i].className += " countrySelector-items__selected";
+				} else {
+					items[i].className = "item countrySelector-items";
+				}
+			}
+		});
+
+		eventDispatcher.on("countrySelectorFilterCountries", function(countryISOArray) {
+			document.getElementById("countryDetailInfo").style.visibility = "hidden";
+			var newItemsPrior = [];
+			var newItemsRest = [];
+			for(let i=0; i<items.length; i++) {
+				var iso = items[i].getAttribute("iso");
+				if(countryISOArray.includes(iso)) {
+					items[i].className = "item countrySelector-items";
+					d3.select(`#circle-${iso}`).style('fill', countryInfoMap.get(iso).color);
+					newItemsPrior.push(items[i]);
+					items[i].onclick = (function() {
+						var item = items[i];
+						return function() {
+							dispatchCountrySelect(item.getAttribute("iso"));
+						}
+					})();
+				} else {
+					
+					items[i].className = "countrySelector-items countrySelector-items__disabled";
+					d3.select(`#circle-${iso}`).style('fill', "rgba(220,220,220, 0.3)");
+					newItemsRest.push(items[i]);
+					items[i].onclick = function() {
+						return;
+					};
+				}
+			}
+			countrySelector.innerHTML = "";
+			
+			newItems = newItemsPrior.concat(newItemsRest);
+			for(let i=0; i<newItems.length; i++) {
+				countrySelector.appendChild(newItems[i]);
+			}
+			
+		});
 	});
 	var input = document.getElementById("countrySelector-searchbar-input");
 

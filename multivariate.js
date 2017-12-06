@@ -8,25 +8,23 @@
 
 	var toFixed1 = function(x) {return +(x.toFixed(1));}
 
-	var width = 650;
-	var height = 600;
+	var width = 1600;
+	var height = 800;
 	var container = d3.select("#multivariate");
 	var svg = container.append("svg");
 	svg.attr("width", width);
     svg.attr("height", height);
 
     var projection = d3.geoMercator()
-	  .scale([100])
+	  .scale([190])
 	  .center([0,0])
-	  .translate([width/2, 300]);
+	  .translate([700, 550]);
 
 	var path = d3.geoPath().projection(projection);
 
     var legend_size = 40;
     var legend = svg.append("g")
-				.attr("transform", function() {
-					return `translate(${width-legend_size*4},450)`;
-				});
+				.attr("transform", "translate(100, 600)");
 
 
 	var color_map = [
@@ -34,7 +32,6 @@
 	["#8c62aa", "#a5add3", "#ace4e4"],
 	["#3b4994", "#5698b9", "#5ac8c8"]];
 
-	var black_color = "#000000";
 
 	var color_map_size = color_map.length;
 
@@ -62,21 +59,24 @@
 				return "~" + d;
 	};
 
-
+	var countries = null;
 	var countryInfoMap = d3.map();
 	var xAxisInfoName = "Life expectancy at birth";
 	var yAxisInfoName = "Expected years of schooling";
+	document.getElementById("multivariate-x-key").innerText  = xAxisInfoName;
+	document.getElementById("multivariate-y-key").innerText  = yAxisInfoName;
+
 
 	var xAxisInfoRange = [Infinity, 0];
 	var yAxisInfoRange = [Infinity, 0];
 
 	var single_char_size = 4;
 
-	legend.append("text").attr("class", "component-x").attr("text-anchor", "start").attr("transform", function() {
+	legend.append("text").attr("class", "component-x").attr("text-anchor", "start").attr("fill", "#fff").attr("transform", function() {
 			return `translate(${(color_map_size*legend_size-single_char_size*xAxisInfoName.length)/2},${color_map_size*legend_size+25})`;
 		}).text(xAxisInfoName).style("font-size",10);
 
-	legend.append("text").attr("class", "component-y").attr("text-anchor", "end").attr("transform", function() {
+	legend.append("text").attr("class", "component-y").attr("text-anchor", "end").attr("fill", "#fff").attr("transform", function() {
 			return `translate(-20,${(color_map_size*legend_size-single_char_size*yAxisInfoName.length)/2})rotate(-90)`;
 		}).text(yAxisInfoName).style("font-size",10);
 
@@ -85,6 +85,8 @@
 	function updateComponent(xAxisSpan, yAxisSpan) {
 		xAxisInfoName = xAxisSpan.innerText;
 		yAxisInfoName = yAxisSpan.innerText;
+		document.getElementById("multivariate-x-key").innerText  = xAxisInfoName;
+		document.getElementById("multivariate-y-key").innerText  = yAxisInfoName;
 		xAxisInfoRange = [Infinity, 0];
 		yAxisInfoRange = [Infinity, 0];
 		d3.select(".component-x").attr("transform", function() {
@@ -148,29 +150,90 @@
 		}).call(xAxis).select(".domain")
 		    .remove();
 
+		legend.append("g").attr("class", "y-axis").attr("transform", function() {
+			return `translate(0,0)`;
+		}).call(yAxis).select(".domain")
+		    .remove();
+
 
 
 		svg.append("g")
 			.selectAll("path")
-				.data(countries.features)
-				.enter().append("path")
-				.attr('d', path)
-				.attr('vector-effect', 'non-scaling-stroke')
-				.style("fill", function(d) {
-					if(!countryInfoMap.has(d.properties.ISO_A3)) {
-						return black_color;
-					}
+			.data(countries.features)
+			.enter().append("path")
+			.attr("id", function(d) {
+                return `multivariate-polygon-${d.properties.ISO_A3}`;
+            })
+            .attr("class", "multivariate-country-polygon")
+			.attr('d', path)
+			.attr('vector-effect', 'non-scaling-stroke')
+			.style("fill", function(d) {
+				var cur = gray;
+				if(countryInfoMap.has(d.properties.ISO_A3)) {
 					var {xAxisInfo, yAxisInfo} = countryInfoMap.get(d.properties.ISO_A3);
 					var x = Math.min(Math.floor(xToIndexScale(xAxisInfo)), 2);
 					var y = Math.min(Math.floor(yToIndexScale(yAxisInfo)), 2);
+					cur = color_map[x][y];
+				}
+				d3.select(this).attr("color", cur);
+				return cur;
+			})
+			.style('cursor', function(d) {
+                if(d3.select(this).attr("color") == gray) {
+                    return 'default';
+                }
+                return 'pointer';
+            })
+            .on('click', function(country){
+	            if(d3.select(this).attr("color") == gray) {
+	                return;
+	            }
+	            dispatchCountrySelect(country.properties.ISO_A3);
+	        });
+	        countries = d3.selectAll(".multivariate-country-polygon");
 
-					return color_map[x][y];
-				});
+	        eventDispatcher.on("multivariateCountrySelect", function(countryISO) {
+				var id = `multivariate-polygon-${countryISO}`;
+	            countries.style("stroke", function (d) {
+	                var curr_id = `multivariate-polygon-${d.properties.ISO_A3}`;
+	                if(curr_id === id) {
+	                	d3.select(this).style("stroke-width", 3);
+	                    return '#fff';
+	                } else {
+	                    return null;
+	                }
+	            });
+	            var countryInfo = countryInfoMap.get(countryISO);
+	            document.getElementById("multivariate-x-value").innerText  = countryInfo.xAxisInfo;
+				document.getElementById("multivariate-y-value").innerText  = countryInfo.yAxisInfo;
+			});
+
+			eventDispatcher.on("componentChange", function(xAxis, yAxis) {
+				updateComponent(xAxis, yAxis);
+			});
+
+			eventDispatcher.on("multivariateFilterCountries", function(countryISOArray) {
+	            var ids = countryISOArray.map(function(countryISO) {return `#multivariate-polygon-${countryISO}`;});
+	            countries.style("fill", function(d) {
+	                var curr_id = `#multivariate-polygon-${d.properties.ISO_A3}`;
+	                var cur = gray;
+	                if(countryInfoMap.has(d.properties.ISO_A3) && ids.includes(curr_id)) {
+	                    var {xAxisInfo, yAxisInfo} = countryInfoMap.get(d.properties.ISO_A3);
+						var x = Math.min(Math.floor(xToIndexScale(xAxisInfo)), 2);
+						var y = Math.min(Math.floor(yToIndexScale(yAxisInfo)), 2);
+						cur = color_map[x][y];
+	                    d3.select(this).style("cursor", "pointer");
+	                } else {
+	                    d3.select(this).style("cursor", 'default');
+	                }
+	                d3.select(this).style("stroke", null);
+	                return cur;
+	            });
+
+	        });
 	}
 
-	eventDispatcher.on("componentChange", function(xAxis, yAxis) {
-			updateComponent(xAxis, yAxis);
-		});
+	
 
 	function getRangeIndex(steps, range, val) {
 		var stepSize = (range[1]-range[0])/steps;

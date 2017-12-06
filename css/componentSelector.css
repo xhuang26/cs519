@@ -1,8 +1,16 @@
+#multivariateController h4 {
+	padding-left: 10px;
+}
+
+.componentSelector-menu {
+	color: white;
+}
+
 .componentSelector-submenu {
 	padding: 10px;
-	background: #1F3043;
 }
 
 .componentSelector-submenu-item-checked {
-	background: #29405A;
+	background: rgba(255, 255, 255, 0.2);
+	color: #fff;
 }

@@ -1,7 +1,8 @@
 (function() {
 
-    var HdiInfo = function(iso, hdi_1990, hdi_2000, hdi_2010, hdi_2011, hdi_2012, hdi_2013, hdi_2014, hdi_2015){
+    var HdiInfo = function(iso, rank, hdi_1990, hdi_2000, hdi_2010, hdi_2011, hdi_2012, hdi_2013, hdi_2014, hdi_2015){
         this.iso = iso;
+        this.rank = rank;
         this.hdi_1990 = hdi_1990;
         this.hdi_2000 = hdi_2000;
         this.hdi_2010 = hdi_2010;
@@ -12,8 +13,8 @@
         this.hdi_2015 = hdi_2015;
     }
 
-    var width = 650;
-    var height = 500;
+    var width = 1600;
+    var height = 800;
     var num_countries = 188;
     var hdi_d3 = d3.select("#hdi");
     var svg = hdi_d3.append("svg");
@@ -21,8 +22,8 @@
     svg.attr("height", height);
 
     var projection = d3.geoMercator()
-        .scale([100])
-        .translate([width/2, 300]);
+        .scale([190])
+        .translate([700, 550]);
 
     var path = d3.geoPath().projection(projection);
 
@@ -31,7 +32,10 @@
         .range(d3.range(width - 200, width - 20));
     var countryToHDI= d3.map();
     var year = "1990";
+    var selectedCountry = null;
+    //var selectedCountryPolygon = null;
     var scale;
+
 
     d3.queue()
         .defer(d3.tsv, "hdi_ranges.tsv")
@@ -47,7 +51,7 @@
         .defer(d3.json, "countries.geojson")
         .defer(d3.tsv, "hdi_historical.tsv", function(d) {
 
-            var hdiInfo = new HdiInfo(d["ISO_A3"], d[1990], d[2000],d[2010],d[2011],d[2012],d[2013],d[2014],d[2015]);
+            var hdiInfo = new HdiInfo(d["ISO_A3"], d["rank"], d[1990], d[2000],d[2010],d[2011],d[2012],d[2013],d[2014],d[2015]);
             countryToHDI.set(d["ISO_A3"], hdiInfo);
         })
         .await(ready);
@@ -55,20 +59,20 @@
     // Drawing the scale bar on the map
     var g = svg.append("g")
         .attr("class", "key")
-        .attr("transform", "translate(0,450)");
+        .attr("transform", "translate(-1300,600)");
     g.selectAll("rect")
       .data(x.domain())
       .enter().append("rect")
         .attr("height", 5)
         .attr("x", function(d) {  return x(d); })
         .attr("width", function(d) { return x(2) - x(1); })
-        .attr("fill", function(d) { return d3.interpolateRdPu(d / num_countries); });
+        .attr("fill", function(d) { return d3.interpolateRdBu(d / num_countries); });
 
     g.append("text")
     .attr("x", x.range()[0])
     .attr("y", -10)
     .attr("class", "caption")
-    .attr("fill", "#000")
+    .attr("fill", "#fff")
     .attr("text-anchor", "start")
     .attr("font-weight", "bold")
     .text("HDI");
@@ -84,58 +88,102 @@
                 return `polygon-${d.properties.ISO_A3}`;
             })
             .attr('d', path)
-            .attr('vector-effect', 'non-scaling-stroke')
-            .style("fill", function(d) {
-                var cur = d3.rgb("black");
-                if (countryToHDI.has(d.properties.ISO_A3)) {
-                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
-                    var hdi = hdiInfo[`hdi_${year}`];
-                    cur = d3.interpolateRdPu(scale(hdi));
-                }
-                return cur;
-            })
-            .on('mouseover', function(country) {
-                d3.select(this).style('stroke', '#00e68a')
-                nameTag.text("Country: " + country.properties.ADMIN)
-                nameTag.style('visibility', 'visible')
-            })
-            .on('mouseout', function() {
-                d3.select(this).style('stroke', null)
-                nameTag.style('visibility', 'hidden')
-            });
+            .attr('vector-effect', 'non-scaling-stroke');
+        updatePolygon();
 
         let nameTag = svg.append("text")
             .attr("x", 10)
             .attr("y", 20)
             .attr("class", "caption")
-            .attr("fill", "#000")
+            .attr("fill", "#fff")
             .attr("text-anchor", "start")
             .attr("font-weight", "bold");
-        eventDispatcher.on("sliderMove", function(year) {
-            svg.selectAll(".country-polygon")
-                .style("fill", function(d) {
-                    var cur = d3.rgb("black");
-                    if (countryToHDI.has(d.properties.ISO_A3)) {
-                        var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
-                        var hdi = hdiInfo[`hdi_${year}`];
-                        cur = d3.interpolateRdPu(scale(hdi));
-                    }
-                    return cur;
-                });
+        eventDispatcher.on("sliderMove", function(newyear) {
+            year = newyear;
+            if(selectedCountry != null) {
+                document.getElementById("span-year").innerText = year;
+                var hdiInfo = countryToHDI.get(selectedCountry);
+                document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
+                document.getElementById("span-rank").innerText  = hdiInfo["rank"];
+            }
+            
+            updatePolygon();
         });
         var countries = d3.selectAll(".country-polygon");
-        eventDispatcher.on('countrySelect', function(countryISOArray) {
-            var ids = countryISOArray.map(function(countryISO) {
-                return `#polygon-${countryISO}`;
-            });
-            countries.style("stroke", function(d) {
-                var curr_id = `#polygon-${d.properties.ISO_A3}`;
-                if(!ids.includes(curr_id)) {
-                   return null;
+        eventDispatcher.on('mapCountrySelect', function(countryISO) {
+            var id = `polygon-${countryISO}`;
+            selectedCountry = countryISO;
+            // selectedCountryPolygon = document.getElementById(id).cloneNode(true);
+            // selectedCountryPolygon.style.fill = "rgba(255, 255, 255, 0)";
+            // selectedCountryPolygon.id = "selected-polygon";
+            // console.log(selectedCountryPolygon, document.getElementById(id));
+            // svg.node().appendChild(selectedCountryPolygon);
+            countries.style("stroke", function (d) {
+                if(countryISO === d.properties.ISO_A3) {
+                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
+                    document.getElementById("countryDetailInfo").style.visibility = "visible";
+                    document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
+                    document.getElementById("span-rank").innerText  = hdiInfo["rank"];
+                    d3.select(this).style("stroke-width", 3);
+                    return '#fff';
                 } else {
-                    return '#00e68a';
+                    return null;
                 }
             });
+        });
+
+        eventDispatcher.on("mapFilterCountries", function(countryISOArray) {
+            var ids = countryISOArray.map(function(countryISO) {return `#polygon-${countryISO}`;});
+            selectedCountry = null;
+            //selectedCountryPolygon = null;
+            countries.style("fill", function(d) {
+                var curr_id = `#polygon-${d.properties.ISO_A3}`;
+                var cur = gray;
+                if(countryToHDI.has(d.properties.ISO_A3) && ids.includes(curr_id)) {
+                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
+                    var hdi = hdiInfo[`hdi_${year}`];
+                    if(hdi !== '..')  {
+                        cur = d3.interpolateRdBu(scale(hdi));
+                        d3.select(this).style("cursor", "pointer");
+                    } else {
+                        d3.select(this).style("cursor", 'default');
+                    }
+                    
+                } else {
+                    d3.select(this).style("cursor", 'default');
+                }
+                d3.select(this).style("stroke", null);
+                return cur;
+            });
+
+        });
+  }
+
+  function updatePolygon() {
+    svg.selectAll(".country-polygon")
+        .style("fill", function(d) {
+                var cur = gray;
+                if (countryToHDI.has(d.properties.ISO_A3)) {
+                    var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
+                    var hdi = hdiInfo[`hdi_${year}`];
+                    if(hdi !== '..')  {
+                        cur = d3.interpolateRdBu(scale(hdi));
+                    }
+                }
+                d3.select(this).attr("color", cur);
+                return cur;
+            })
+            .style('cursor', function(d) {
+            if(d3.select(this).attr("color") == gray) {
+                return 'default';
+            }
+            return 'pointer';
+        })
+        .on('click', function(country){
+            if(d3.select(this).attr("color") == gray) {
+                return;
+            }
+            dispatchCountrySelect(country.properties.ISO_A3);
         });
   }
 
