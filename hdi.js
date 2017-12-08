@@ -113,11 +113,6 @@
         eventDispatcher.on('mapCountrySelect', function(countryISO) {
             var id = `polygon-${countryISO}`;
             selectedCountry = countryISO;
-            // selectedCountryPolygon = document.getElementById(id).cloneNode(true);
-            // selectedCountryPolygon.style.fill = "rgba(255, 255, 255, 0)";
-            // selectedCountryPolygon.id = "selected-polygon";
-            // console.log(selectedCountryPolygon, document.getElementById(id));
-            // svg.node().appendChild(selectedCountryPolygon);
             countries.style("stroke", function (d) {
                 if(countryISO === d.properties.ISO_A3) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
