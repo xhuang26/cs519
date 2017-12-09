@@ -1,6 +1,7 @@
 var eventDispatcher = d3.dispatch("sliderMove", "componentChange", "countrySelectorCountrySelect", "mapCountrySelect", "multivariateCountrySelect", "graphCountrySelect", "mapFilterCountries", "countrySelectorFilterCountries", "multivariateFilterCountries");
 
-var gray = d3.color('rgba(0,0,0,0.4)');
+var gray = d3.color('rgba(0,0,0,1)');
+var strokeColor = "#191A1A";
 
 function findRange(range, newVal) {
 	range[0] = Math.min(range[0], newVal);

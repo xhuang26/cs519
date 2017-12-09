@@ -5,3 +5,26 @@
 .tick line {
 	stroke: #fff;
 }
+
+.tooltip {
+	position: absolute;           
+	text-align: center;           
+	width: 150px;                  
+	padding: 2px; 
+	padding-bottom: 5px;            
+	font: 12px sans-serif;        
+	background: black;  
+	color: white; 
+	border: 0px;      
+	border-radius: 8px;           
+	pointer-events: none;
+}
+
+#tooltip-country {
+	font-size: 14px;
+}
+
+#tooltip-note {
+	font-size: 11px;
+	padding-top: 3px;
+}

@@ -11,6 +11,12 @@
         this.hdi_2013 = hdi_2013;
         this.hdi_2014 = hdi_2014;
         this.hdi_2015 = hdi_2015;
+    };
+
+    var tooltipTexts = {
+        "default": "click to see detail info",
+        "noData": "no data available",
+        "filtered": "country has been filtered out",  
     }
 
     var width = 1600;
@@ -35,6 +41,18 @@
     var selectedCountry = null;
     //var selectedCountryPolygon = null;
     var scale;
+
+
+    // Append Div for tooltip to SVG
+    var tooltipContainer = d3.select("body")
+                .append("div")   
+                .attr("id", "tooltip-container")
+                .attr("class", "tooltip")               
+                .style("opacity", 0);
+    var tooltipCountry = tooltipContainer.append("div")
+                .attr("id", "tooltip-country");
+    var tooltipNote = tooltipContainer.append("div")
+                .attr("id", "tooltip-note");
 
 
     d3.queue()
@@ -88,7 +106,25 @@
                 return `polygon-${d.properties.ISO_A3}`;
             })
             .attr('d', path)
-            .attr('vector-effect', 'non-scaling-stroke');
+            .attr('vector-effect', 'non-scaling-stroke')
+            .on("mouseover", function(d) {
+                    tooltipContainer.transition()
+                        .duration(200)
+                        .style("opacity", .7);
+                          
+            })
+            .on("mousemove", function(d) {
+                document.getElementById("tooltip-country").innerText = d.properties.ADMIN;
+                document.getElementById("tooltip-note").innerText = tooltipTexts[this.getAttribute("tooltipText")];
+                var height = document.getElementById("tooltip-container").getBoundingClientRect().height;
+                tooltipContainer.style("left", (d3.event.pageX-70)+"px")
+                        .style("top", (d3.event.pageY-height)+"px"); 
+            })
+            .on("mouseout", function(d) {
+                tooltipContainer.transition()        
+                    .duration(100)      
+                    .style("opacity", 0);                 
+            });
         updatePolygon();
 
         let nameTag = svg.append("text")
@@ -103,7 +139,7 @@
             if(selectedCountry != null) {
                 document.getElementById("span-year").innerText = year;
                 var hdiInfo = countryToHDI.get(selectedCountry);
-                document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
+                document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`] == ".." ? "(no data available)" : hdiInfo[`hdi_${year}`];
                 document.getElementById("span-rank").innerText  = hdiInfo["rank"];
             }
             
@@ -112,17 +148,21 @@
         var countries = d3.selectAll(".country-polygon");
         eventDispatcher.on('mapCountrySelect', function(countryISO) {
             var id = `polygon-${countryISO}`;
+
             selectedCountry = countryISO;
             countries.style("stroke", function (d) {
                 if(countryISO === d.properties.ISO_A3) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                     document.getElementById("countryDetailInfo").style.visibility = "visible";
-                    document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`];
+                    document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`] == ".." ? "(no data available)" : hdiInfo[`hdi_${year}`];
                     document.getElementById("span-rank").innerText  = hdiInfo["rank"];
-                    d3.select(this).style("stroke-width", 3);
+                    d3.select(this).style("stroke-width", 2);
                     return '#fff';
                 } else {
-                    return null;
+                    if(d3.select(this).attr("stroke") === "#fff") {
+                        return null;
+                    }
+                    return d3.select(this).attr("stroke");
                 }
             });
         });
@@ -134,20 +174,26 @@
             countries.style("fill", function(d) {
                 var curr_id = `#polygon-${d.properties.ISO_A3}`;
                 var cur = gray;
+                this.setAttribute("tooltipText", "noData");
+                d3.select(this).attr("stroke", strokeColor)
+                                .attr("stroke-width", 1);
                 if(countryToHDI.has(d.properties.ISO_A3) && ids.includes(curr_id)) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                     var hdi = hdiInfo[`hdi_${year}`];
                     if(hdi !== '..')  {
                         cur = d3.interpolateRdBu(scale(hdi));
                         d3.select(this).style("cursor", "pointer");
+                        this.setAttribute("tooltipText", "default");
+                        d3.select(this).attr("stroke", null);
                     } else {
                         d3.select(this).style("cursor", 'default');
-                    }
-                    
+                    }    
                 } else {
                     d3.select(this).style("cursor", 'default');
+                    if(countryToHDI.has(d.properties.ISO_A3) && !ids.includes(curr_id)) {
+                        this.setAttribute("tooltipText", "filtered");
+                    }
                 }
-                d3.select(this).style("stroke", null);
                 return cur;
             });
 
@@ -157,14 +203,21 @@
   function updatePolygon() {
     svg.selectAll(".country-polygon")
         .style("fill", function(d) {
+                
                 var cur = gray;
+                this.setAttribute("tooltipText", "noData");
+                d3.select(this).attr("stroke", strokeColor)
+                                .attr("stroke-width", 1);
                 if (countryToHDI.has(d.properties.ISO_A3)) {
                     var hdiInfo = countryToHDI.get(d.properties.ISO_A3);
                     var hdi = hdiInfo[`hdi_${year}`];
                     if(hdi !== '..')  {
                         cur = d3.interpolateRdBu(scale(hdi));
-                    }
-                }
+                        this.setAttribute("tooltipText", "default");
+                        d3.select(this).attr("stroke", null);
+                    } 
+                } 
+                
                 d3.select(this).attr("color", cur);
                 return cur;
             })

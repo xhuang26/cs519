@@ -170,3 +170,7 @@ span {
 #countrySelectorSection h3 {
   border-bottom: 1px solid #495058;
 }
+
+#hdiInfo {
+  padding-bottom: 5px;
+}
