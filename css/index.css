@@ -8,7 +8,11 @@ body {
 }
 h3, h4 {
   margin: 0;
-  
+
+}
+
+#mapContainer {
+  float:left;
 }
 
 h3 {
@@ -54,7 +58,7 @@ span {
 }
 
 #topPanel h3 {
-  
+
   width: 250px;
 }
 
@@ -130,7 +134,7 @@ span {
   height: 1.4em;
   border-top: 0.2em solid rgba(255,255,255,0.7);
   border-right: 0.2em solid rgba(255,255,255,0.7);
-  
+
   margin-left: 2.2em;
 }
 

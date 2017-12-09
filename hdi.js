@@ -16,7 +16,7 @@
     var tooltipTexts = {
         "default": "click to see detail info",
         "noData": "no data available",
-        "filtered": "country has been filtered out",  
+        "filtered": "country has been filtered out",
     }
 
     var width = 1600;
@@ -24,9 +24,11 @@
     var num_countries = 188;
     var hdi_d3 = d3.select("#hdi");
     var svg = hdi_d3.append("svg");
-    svg.attr("width", width);
-    svg.attr("height", height);
-
+    svg.attr("width", width)
+    svg.attr("height", height)
+        .call(d3.zoom().on("zoom", function () {
+            svg.attr("transform", d3.event.transform)
+        }))
     var projection = d3.geoMercator()
         .scale([190])
         .translate([700, 550]);
@@ -45,25 +47,14 @@
 
     // Append Div for tooltip to SVG
     var tooltipContainer = d3.select("body")
-                .append("div")   
+                .append("div")
                 .attr("id", "tooltip-container")
-                .attr("class", "tooltip")               
+                .attr("class", "tooltip")
                 .style("opacity", 0);
     var tooltipCountry = tooltipContainer.append("div")
                 .attr("id", "tooltip-country");
     var tooltipNote = tooltipContainer.append("div")
                 .attr("id", "tooltip-note");
-
-
-    d3.queue()
-        .defer(d3.tsv, "hdi_ranges.tsv")
-        .await(function(error, ranges) {
-            var min = Math.min.apply(null, Object.values(ranges[0]));
-            var max = Math.max.apply(null, Object.values(ranges[1]));
-            var range = [min,max];
-            scale = d3.scaleLinear().domain(range).range([0, 1]);
-            legendTicks(range);
-        });
 
     d3.queue()
         .defer(d3.json, "countries.geojson")
@@ -74,26 +65,15 @@
         })
         .await(ready);
 
-    // Drawing the scale bar on the map
-    var g = svg.append("g")
-        .attr("class", "key")
-        .attr("transform", "translate(-1300,600)");
-    g.selectAll("rect")
-      .data(x.domain())
-      .enter().append("rect")
-        .attr("height", 5)
-        .attr("x", function(d) {  return x(d); })
-        .attr("width", function(d) { return x(2) - x(1); })
-        .attr("fill", function(d) { return d3.interpolateRdBu(d / num_countries); });
+    d3.queue()
+        .defer(d3.tsv, "hdi_ranges.tsv")
+        .await(function(error, ranges) {
+            var min = Math.min.apply(null, Object.values(ranges[0]));
+            var max = Math.max.apply(null, Object.values(ranges[1]));
+            range = [min,max];
+            scale = d3.scaleLinear().domain(range).range([0, 1]);
 
-    g.append("text")
-    .attr("x", x.range()[0])
-    .attr("y", -10)
-    .attr("class", "caption")
-    .attr("fill", "#fff")
-    .attr("text-anchor", "start")
-    .attr("font-weight", "bold")
-    .text("HDI");
+        });
 
     function ready(error, countries) {
         if (error) throw error;
@@ -111,19 +91,19 @@
                     tooltipContainer.transition()
                         .duration(200)
                         .style("opacity", .7);
-                          
+
             })
             .on("mousemove", function(d) {
                 document.getElementById("tooltip-country").innerText = d.properties.ADMIN;
                 document.getElementById("tooltip-note").innerText = tooltipTexts[this.getAttribute("tooltipText")];
                 var height = document.getElementById("tooltip-container").getBoundingClientRect().height;
                 tooltipContainer.style("left", (d3.event.pageX-70)+"px")
-                        .style("top", (d3.event.pageY-height)+"px"); 
+                        .style("top", (d3.event.pageY-height)+"px");
             })
             .on("mouseout", function(d) {
-                tooltipContainer.transition()        
-                    .duration(100)      
-                    .style("opacity", 0);                 
+                tooltipContainer.transition()
+                    .duration(100)
+                    .style("opacity", 0);
             });
         updatePolygon();
 
@@ -142,7 +122,7 @@
                 document.getElementById("span-value").innerText = hdiInfo[`hdi_${year}`] == ".." ? "(no data available)" : hdiInfo[`hdi_${year}`];
                 document.getElementById("span-rank").innerText  = hdiInfo["rank"];
             }
-            
+
             updatePolygon();
         });
         var countries = d3.selectAll(".country-polygon");
@@ -187,7 +167,7 @@
                         d3.select(this).attr("stroke", null);
                     } else {
                         d3.select(this).style("cursor", 'default');
-                    }    
+                    }
                 } else {
                     d3.select(this).style("cursor", 'default');
                     if(countryToHDI.has(d.properties.ISO_A3) && !ids.includes(curr_id)) {
@@ -198,12 +178,13 @@
             });
 
         });
-  }
+        legendTicks(range);
+    }
 
-  function updatePolygon() {
-    svg.selectAll(".country-polygon")
+    function updatePolygon() {
+        svg.selectAll(".country-polygon")
         .style("fill", function(d) {
-                
+
                 var cur = gray;
                 this.setAttribute("tooltipText", "noData");
                 d3.select(this).attr("stroke", strokeColor)
@@ -215,9 +196,9 @@
                         cur = d3.interpolateRdBu(scale(hdi));
                         this.setAttribute("tooltipText", "default");
                         d3.select(this).attr("stroke", null);
-                    } 
-                } 
-                
+                    }
+                }
+
                 d3.select(this).attr("color", cur);
                 return cur;
             })
@@ -233,9 +214,31 @@
             }
             dispatchCountrySelect(country.properties.ISO_A3);
         });
-  }
+    }
 
-  function legendTicks(range) {
+
+    function legendTicks(range) {
+        // Drawing the scale bar on the map
+        var g = svg.append("g")
+            .attr("class", "key")
+            .attr("transform", "translate(-1300,600)");
+        g.selectAll("rect")
+          .data(x.domain())
+          .enter().append("rect")
+            .attr("height", 5)
+            .attr("x", function(d) {  return x(d); })
+            .attr("width", function(d) { return x(2) - x(1); })
+            .attr("fill", function(d) { return d3.interpolateRdBu(d / num_countries); });
+
+        g.append("text")
+        .attr("x", x.range()[0])
+        .attr("y", -10)
+        .attr("class", "caption")
+        .attr("fill", "#fff")
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .text("HDI");
+
         var x2 = d3.scaleLinear()
         .domain(range)
         .range([width - 200, width - 20]);

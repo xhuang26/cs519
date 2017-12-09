@@ -14,7 +14,9 @@
 	var svg = container.append("svg");
 	svg.attr("width", width);
     svg.attr("height", height);
-
+    svg.call(d3.zoom().on("zoom", function () {
+        svg.attr("transform", d3.event.transform)
+    }))
     var projection = d3.geoMercator()
 	  .scale([190])
 	  .center([0,0])
@@ -233,7 +235,7 @@
 	        });
 	}
 
-	
+
 
 	function getRangeIndex(steps, range, val) {
 		var stepSize = (range[1]-range[0])/steps;
