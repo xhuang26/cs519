@@ -76,10 +76,8 @@
             scale = d3.scaleLinear().domain(range).range([0, 1]);
 
         });
-
     function ready(error, countries) {
         if (error) throw error;
-
         svg.selectAll("path")
             .data(countries.features)
             .enter().append("path")

@@ -154,7 +154,6 @@ span {
 
 #countryDetailInfo {
   position: absolute;
-  width: 300px;
   background: rgba(0,0,0,0.8);
   visibility: hidden;
   padding-bottom: 10px;

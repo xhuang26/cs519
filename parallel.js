@@ -58,11 +58,34 @@
             lines.style("stroke", function(d, i) {
                 if(d.ISO_A3 === countryISO) {
                     document.getElementById("h3-country").innerText = d['Country'].toUpperCase();
-                    document.getElementById("span-hdi").innerText = d['Human Development Index (HDI)'];
-                    document.getElementById("span-leb").innerText  = d['Life expectancy at birth'];
-                    document.getElementById("span-eys").innerText = d['Expected years of schooling'];
-                    document.getElementById("span-mys").innerText  = d['Mean years of schooling'];
-                    document.getElementById("span-gni").innerText = d['Gross national income (GNI) per capita'];
+
+                    hdi_val = d['Human Development Index (HDI)'];
+                    leb_val = d['Life expectancy at birth'];
+                    eys_val = d['Expected years of schooling'];
+                    mys_val = d['Mean years of schooling'];
+                    gni_val = d['Gross national income (GNI) per capita'];
+                    var comp_data = [
+                        [
+                            {axis:"HDI: " + hdi_val, value:window.ranks['Human Development Index (HDI)'][hdi_val]},
+                            {axis:"LEB: " + leb_val, value:window.ranks['Life expectancy at birth'][leb_val]},
+                            {axis:"EYS: " + eys_val, value:window.ranks['Expected years of schooling'][eys_val]},
+                            {axis:"MYS: " + mys_val, value:window.ranks['Mean years of schooling'][mys_val]},
+                            {axis:"GNI: " + gni_val, value:window.ranks['Gross national income (GNI) per capita'][gni_val]},
+                        ]
+                    ];
+                    //Options for the Radar chart, other than default
+                    var mycfg = {
+                        w: 120,
+                        h: 120,
+                        maxValue: 1,
+                        levels: 4
+                    }
+                    RadarChart.draw("#radarChart", comp_data, mycfg);
+                    // document.getElementById("span-hdi").innerText = d['Human Development Index (HDI)'];
+                    // document.getElementById("span-leb").innerText  = d['Life expectancy at birth'];
+                    // document.getElementById("span-eys").innerText = d['Expected years of schooling'];
+                    // document.getElementById("span-mys").innerText  = d['Mean years of schooling'];
+                    // document.getElementById("span-gni").innerText = d['Gross national income (GNI) per capita'];
                     if(selectedCountryLine != null) {
                         svg.node().removeChild(selectedCountryLine);
                     }
@@ -76,7 +99,7 @@
                     if(d3.select(`#line-${d['ISO_A3']}`).style("stroke") === gray) {
                         return gray;
                     }
-                    
+
                 }
                 var rank = d['HDI rank'];
                 return d3.interpolateSpectral(scale(rank));
@@ -94,7 +117,7 @@
 
         // Add an axis and title.
         g.append("g")
-            .attr("class", "axis")
+            .attr("class", "textParallel")
             .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
             .append("text")
             .style("text-anchor", "middle")

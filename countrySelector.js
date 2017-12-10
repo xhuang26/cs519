@@ -1,5 +1,4 @@
 (function() {
-
 	var selectedCountry = null;
 	var CountryInfo = function(name, iso, scale, rank) {
 		this.name = name;
@@ -17,9 +16,31 @@
 	var countryInfoMap = d3.map();
 	var countrySelector = document.getElementById("countrySelector");
 	var items;
+
 	d3.tsv("hdi_table1.tsv", function(error, hdi) {
 		var numCountries = hdi.length;
 		scale = d3.scaleLinear().domain([1, numCountries]).range([0, 1]);
+
+		keys = ['Human Development Index (HDI)', 'Life expectancy at birth',
+			'Expected years of schooling', 'Mean years of schooling', 'Gross national income (GNI) per capita'];
+		window.ranks = {}
+		hdi.forEach(function(country) {
+			iso = country["ISO_A3"];
+			keys.forEach(function(key) {
+				if (!window.ranks.hasOwnProperty(key))
+					window.ranks[key] = {}
+				window.ranks[key][country[key]] = 1
+			});
+		});
+		keys.forEach(function(key) {
+			var sorted_keys = Object.keys(window.ranks[key]).sort(function(a, b){return parseFloat(a) - parseFloat(b)});
+			var i = 1;
+			sorted_keys.forEach(function(val) {
+				window.ranks[key][val] = 1.0 * i / sorted_keys.length
+				i += 1;
+			});
+		});
+
 		hdi.forEach(function(country) {
 			var countryInfo = new CountryInfo(country['Country'], country["ISO_A3"], scale, country["HDI rank"]);
 			var div = countryInfo.getDiv();
@@ -77,7 +98,7 @@
 						}
 					})();
 				} else {
-					
+
 					items[i].className = "countrySelector-items countrySelector-items__disabled";
 					d3.select(`#circle-${iso}`).style('fill', "rgba(220,220,220, 0.3)");
 					newItemsRest.push(items[i]);
@@ -87,12 +108,12 @@
 				}
 			}
 			countrySelector.innerHTML = "";
-			
+
 			newItems = newItemsPrior.concat(newItemsRest);
 			for(let i=0; i<newItems.length; i++) {
 				countrySelector.appendChild(newItems[i]);
 			}
-			
+
 		});
 	});
 	var input = document.getElementById("countrySelector-searchbar-input");
