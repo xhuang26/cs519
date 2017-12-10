@@ -11,12 +11,14 @@
 	var width = 1600;
 	var height = 800;
 	var container = d3.select("#multivariate");
-	var svg = container.append("svg");
-	svg.attr("width", width);
-    svg.attr("height", height);
-    svg.call(d3.zoom().on("zoom", function () {
+	var svg1 = container.append("svg");
+	svg1.attr("width", width);
+    svg1.attr("height", height)
+    var svg = svg1.append("g");
+    svg1.call(d3.zoom().on("zoom", function () {
         svg.attr("transform", d3.event.transform)
-    }))
+    }));
+
     var projection = d3.geoMercator()
 	  .scale([190])
 	  .center([0,0])

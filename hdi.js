@@ -23,12 +23,14 @@
     var height = 800;
     var num_countries = 188;
     var hdi_d3 = d3.select("#hdi");
-    var svg = hdi_d3.append("svg");
-    svg.attr("width", width)
-    svg.attr("height", height)
-        .call(d3.zoom().on("zoom", function () {
-            svg.attr("transform", d3.event.transform)
-        }))
+    var svg1 = hdi_d3.append("svg");
+    svg1.attr("width", width);
+    svg1.attr("height", height);
+    var svg = svg1.append("g");
+    svg1.call(d3.zoom().on("zoom", function () {
+        svg.attr("transform", d3.event.transform)
+    }));
+
     var projection = d3.geoMercator()
         .scale([190])
         .translate([700, 550]);
