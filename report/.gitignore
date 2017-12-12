@@ -4,4 +4,5 @@
 *.aux
 *.blb
 *.log
+*.bbl
 *.synctex.gz
