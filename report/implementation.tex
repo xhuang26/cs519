@@ -1,5 +1,14 @@
 \section{Implementation}
-We implement our tool by...
-
+We implement our tool in JavaScript because we want our tool to be a web-based application, which can be easy to accessed. JavaScript also has a library called D3.js that is used for producing data visualization in web browsers. Our tool can be run on a web browser. We use the built-in HTTP server , \texttt{SimpleHTTPServer}, to test and run our tool. Next we describe UI components and other tools we use in order to implement our web-based application.
 \subsection{UI Components}
+Our tool consists of multiple UI components as follows:
+\begin{itemize}
+	\item \textbf{World Map}: we use the geojson data~\cite{geocountries}, which contains information for each country, such as country polygon coordinates to draw the world map and ISO ALPHA-3 code.
+	\item \textbf{Parallel Coordinate Plot:}
+    \item \textbf{Country Infomation:}
+	\item \textbf{Controller:}
+    \item \textbf{Country Selector:}
+\end{itemize}
+
 \subsection{Tools}
+To created the preceding UI components, we mainly use HTML \texttt{<div>} tag with some CSS script to customize the UI components and the charts. For drawing charts and maps, we use D3.js, which provides several APIs.
