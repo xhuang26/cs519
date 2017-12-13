@@ -152,6 +152,11 @@
     }
 
     function brush() {
+        if(selectedCountryLine != null) {
+            svg.node().removeChild(selectedCountryLine);
+            selectedCountryLine = null;
+
+        }
         var selection = d3.brushSelection(this);
         var actives = dimensions.filter(function(p) {
             return d3.brushSelection(y[p].brush) != null;

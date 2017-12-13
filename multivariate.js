@@ -220,6 +220,7 @@
 	            var ids = countryISOArray.map(function(countryISO) {return `#multivariate-polygon-${countryISO}`;});
 	            countries.style("fill", function(d) {
 	                var curr_id = `#multivariate-polygon-${d.properties.ISO_A3}`;
+	                d3.select(this).style("stroke", null);
 	                var cur = gray;
 	                if(countryInfoMap.has(d.properties.ISO_A3) && ids.includes(curr_id)) {
 	                    var {xAxisInfo, yAxisInfo} = countryInfoMap.get(d.properties.ISO_A3);
@@ -230,7 +231,7 @@
 	                } else {
 	                    d3.select(this).style("cursor", 'default');
 	                }
-	                d3.select(this).style("stroke", null);
+	                
 	                return cur;
 	            });
 
