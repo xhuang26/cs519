@@ -17,7 +17,7 @@
 %% review process. Some conferences, like IEEE Vis and InfoVis, have NOT
 %% in the past.
 
-%% s should be in CMYK or Grey scale format, otherwise, colour
+%% Figures should be in CMYK or Grey scale format, otherwise, colour
 %% shifting may occur during the printing process.
 
 %% These few lines make a distinction between latex and pdflatex calls and they
@@ -52,12 +52,12 @@
 \usepackage{tabu}                      % only used for the table example
 \usepackage{booktabs}                  % only used for the table example
 \usepackage{graphicx}
-\usepackage{subcaption}
-
+\usepackage{subfig}
 %% We encourage the use of mathptmx for consistent usage of times font
 %% throughout the proceedings. However, if you encounter conflicts
 %% with other math-related packages, you may want to disable it.
-
+\usepackage{color}
+\newcommand{\todo}[1]{{\color{red}\bfseries [[#1]]}}
 
 %% If you are submitting a paper to a conference for review with a double
 %% blind reviewing process, please replace the value ``0'' below with your
