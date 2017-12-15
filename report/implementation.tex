@@ -47,5 +47,6 @@ Our tool consists of multiple UI components as follows:
     \end{figure}
 \end{itemize}
 
-\subsection{Design Logic}
-To creating the preceding UI components, we have a main HTML file that includes one HTML \texttt{<div>} wrapper with a unique id for each UI component. Each UI component is implemented in a single JS file as module, where we extract the corresponding wrapper div from the main HTML file to build visualizations. For the charts and map, we use D3.js to create svg and inner layers. For communication between different UI components, we use d3.dispatch to generate event dispatchers and event listeners.  We also have a global JS file to shares global variables among all the components. As for styling, we create one CSS file for each component to independently set styles of components.
+% Commented out due to page limit - already talked briefly about this in the beginning of Implementation
+% \subsection{Design Logic}
+% To creating the preceding UI components, we have a main HTML file that includes one HTML \texttt{<div>} wrapper with a unique id for each UI component. Each UI component is implemented in a single JS file as module, where we extract the corresponding wrapper div from the main HTML file to build visualizations. For the charts and map, we use D3.js to create svg and inner layers. For communication between different UI components, we use d3.dispatch to generate event dispatchers and event listeners.  We also have a global JS file to shares global variables among all the components. As for styling, we create one CSS file for each component to independently set styles of components.
